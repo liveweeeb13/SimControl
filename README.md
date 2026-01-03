@@ -1,96 +1,78 @@
 # SimControl 2026 🚀
 
-**Contrôleur web moderne pour simulateurs** par liveweeeb
+**Modern web controller for simulators** by liveweeeb
 
 [![Version](https://img.shields.io/badge/version-beta--2026.01.03--1-blue)](https://github.com/liveweeeb/SimControl)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 
 
 
-## 🚀 Installation rapide
+**Access**: http://IP:3001
 
-```bash
-# Cloner le projet
-git clone https://github.com/liveweeeb/SimControl.git
-cd SimControl
+> 💡 **Recommended**: Use on mobile/tablet in landscape mode
 
-# Installer les dépendances
-pip install -r requirements.txt
+## 🎮 Usage
 
-# Lancer SimControl
-python app.py
-```
+### 1. Initial Setup
+- Click on "🎛️ Edit Buttons"
+- Configure your buttons (35 slots available)
+- Define rules if necessary
 
-**Accès** : http://IP:3001
+### 2. Launch
+- Click on "Start SimControl"
+- Your controller is ready!
 
-> 💡 **Recommandé** : Utilisation sur mobile/tablette en mode paysage
+## ⚙️ Advanced Configuration (public/config.js)
 
-## 🎮 Utilisation
-
-### 1. Configuration initiale
-- Cliquez sur "🎛️ Modifier Boutons"
-- Configurez vos boutons (35 emplacements disponibles)
-- Définissez les règles si nécessaire
-
-### 2. Lancement
-- Cliquez sur "🚀 Démarrer SimControl"
-- Votre controlleur est prêt !
-
-## ⚙️ Configuration avancée
-
-### Structure des boutons
+### Button Structure 
 ```js
 {
     id: 1,                    // Position (1-35)
-    title: "Batterie",        // Nom descriptif
-    label: "🔋",              // Emoji/texte affiché
-    key: "w",                 // Touche clavier
-    toggleable: true,         // Toggle ou poussoir
-    color1: "#ff0000",        // Couleur OFF
-    color2: "#00ff00",        // Couleur ON
-    holdTime: 2500            // Temps maintien (ms)
+    title: "Battery",         // Descriptive name
+    label: "🔋",              // Emoji/text displayed
+    key: "w",                 // Keyboard key
+    toggleable: true,         // Toggle or push button
+    color1: "#ff0000",        // OFF color
+    color2: "#00ff00",        // ON color
+    holdTime: 2500            // Hold time (ms)
 }
 ```
 
-### Règles automatiques
+### Automatic Rules
 ```js
 const rules = {
-    // Désactivation automatique
+    // Automatic disable
     autodisable: [
         {
-            trigger: 1,           // Bouton déclencheur
-            targets: [2, 3],      // Boutons à désactiver
+            trigger: 1,           // Trigger button
+            targets: [2, 3],      // Buttons to disable
             condition: "off"      // Condition (on/off)
         }
     ],
-    // Blocage conditionnel
+    // Conditional blocking
     stopmac: [
         {
-            trigger: 1,           // Bouton déclencheur
-            targets: [4, 5],      // Boutons à bloquer
-            condition: "off"      // Quand bloquer
+            trigger: 1,           // Trigger button
+            targets: [4, 5],      // Buttons to block
+            condition: "off"      // When to block
         }
     ]
 };
 ```
 
-## 🔄 Auto-Update
-
-SimControl se met à jour automatiquement au démarrage :
-- ✅ Code source toujours à jour
-- ✅ Nouvelles fonctionnalités instantanées
-- ✅ Corrections de bugs automatiques
-- ✅ Configuration utilisateur préservée
-
-## 🛠️ Développement
-
-**Créé avec ❤️ par liveweeeb**
-
+## 🛠️ Development
 
 
 ## 🤝 Contribution
 
-**Aide à la conception** : Mr_Ewann 🚂🚃
+**Design Help**: Mr_Ewann 🚂🚃
 
+## 📞 Support
 
-**SimControl 2026**
+- 🐈 **GitHub**: https://github.com/liveweeeb
+- 💬 **Discord**: https://discord.gg/ukJegYrXWR
+- 📧 **Contact**: https://id.rappytv.com/790240841598763018
+
+---
+
+**Created with ❤️ by liveweeeb | SimControl 2026**

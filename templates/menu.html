@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,7 @@
             <div class="status-light green"></div>
             <span>SYSTEM READY</span>
         </div>
-        <h1 class="cockpit-title">SIMCONTROL COMMAND CENTER</h1>
+        <h1 class="cockpit-title">SimControl By liveweeeb</h1>
         <div class="header-right">
             <div class="digital-clock" id="clock"></div>
         </div>
@@ -23,28 +23,46 @@
         <div class="menu-section">
             <h2>Configuration</h2>
             <div class="menu-buttons">
-                <button onclick="exportConfig()" class="menu-btn">📤 Exporter Config</button>
-                <button onclick="document.getElementById('importFile').click()" class="menu-btn">📥 Importer Config</button>
+                <button onclick="exportConfig()" class="menu-btn">📤 Export Config</button>
+                <button onclick="document.getElementById('importFile').click()" class="menu-btn">📥 Import Config</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importConfig(event)">
             </div>
         </div>
 
         <div class="menu-section">
-            <h2>Édition</h2>
+            <h2>Edition</h2>
             <div class="menu-buttons">
-                <button onclick="editButtons()" class="menu-btn">🎛️ Modifier Boutons</button>
-                <button onclick="editRules()" class="menu-btn">⚙️ Modifier Règles</button>
-                <button onclick="showCredits()" class="menu-btn">ℹ️ Crédits</button>
+                <button onclick="editButtons()" class="menu-btn">🎛️ Edit Buttons</button>
+                <button onclick="editRules()" class="menu-btn">⚙️ Edit Rules</button>
+                <button onclick="showCredits()" class="menu-btn">ℹ️ Credits</button>
             </div>
         </div>
 
         <div class="menu-section">
-            <button onclick="startSimControl()" class="start-btn">🚀 Démarrer SimControl</button>
+            <button onclick="startSimControl()" class="start-btn">Start SimControl</button>
         </div>
     </div>
 
+    {% if needs_update %}
+    <div id="updateModal" class="modal" style="display: block;">
+        <div class="modal-content update-modal">
+            <h3>⚠️ Update Available</h3>
+            <div class="update-info">
+                <p><strong>Installed Version:</strong> <code>{{ current_version }}</code></p>
+                <p><strong>Latest Version:</strong> <code>{{ latest_version }}</code></p>
+                <p>A new version of SimControl is available!</p>
+                <p>Run <code>UPDATE.exe</code> in the main directory to update.</p>
+            </div>
+            <div class="update-buttons">
+                <button onclick="closeModal('updateModal')" class="update-btn-later">Later</button>
+                <button onclick="window.open('https://github.com/liveweeeb13/SimControl/releases', '_blank')" class="update-btn-now">Update</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <footer class="footer">
-        <p>Créé avec <span class="heart">❤️</span> par <strong>liveweeeb</strong> | SimControl 2026</p>
+        <p>Created with <span class="heart">❤️</span> by <strong>liveweeeb</strong> | SimControl 2026</p>
         <div class="footer-links">
             <a href="https://github.com/liveweeeb13" target="_blank">🐈 GitHub</a>
             <a href="https://discord.gg/ukJegYrXWR" target="_blank">💬 Discord</a>
@@ -55,19 +73,19 @@
     <div id="buttonModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('buttonModal')">&times;</span>
-            <h3>Modifier Bouton</h3>
+            <h3>Edit Button</h3>
             <form id="buttonForm">
                 <input type="hidden" id="buttonId">
-                <label>Titre: <input type="text" id="buttonTitle"></label>
+                <label>Title: <input type="text" id="buttonTitle"></label>
                 <label>Label: <input type="text" id="buttonLabel"></label>
-                <label>Touche: <input type="text" id="buttonKey" maxlength="1"></label>
+                <label>Key: <input type="text" id="buttonKey" maxlength="1"></label>
                 <label>Toggleable: <input type="checkbox" id="buttonToggleable"></label>
-                <label>Couleur OFF: <input type="color" id="buttonColor1"></label>
-                <label>Couleur ON: <input type="color" id="buttonColor2"></label>
+                <label>Color OFF: <input type="color" id="buttonColor1"></label>
+                <label>Color ON: <input type="color" id="buttonColor2"></label>
                 <label>Hold Time (ms): <input type="number" id="buttonHoldTime" min="0"></label>
                 <div class="modal-buttons">
-                    <button type="button" onclick="saveButton()">Sauvegarder</button>
-                    <button type="button" onclick="deleteButton()">Supprimer</button>
+                    <button type="button" onclick="saveButton()">Save</button>
+                    <button type="button" onclick="deleteButton()">Delete</button>
                 </div>
             </form>
         </div>
@@ -76,33 +94,31 @@
     <div id="rulesModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('rulesModal')">&times;</span>
-            <h3>Modifier Règles</h3>
+            <h3>Edit Rules</h3>
             <div id="rulesContent"></div>
-            <button onclick="addRule('autodisable')">+ Ajouter Autodisable</button>
-            <button onclick="addRule('stopmac')">+ Ajouter Stopmac</button>
-            <button onclick="saveRules()">Sauvegarder Règles</button>
+            <button onclick="addRule('autodisable')">+ Add Autodisable</button>
+            <button onclick="addRule('stopmac')">+ Add Stopmac</button>
+            <button onclick="saveRules()">Save Rules</button>
         </div>
     </div>
 
     <div id="creditsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('creditsModal')">&times;</span>
-            <h3>Crédits & Informations</h3>
+            <h3>Credits & Information</h3>
             <div class="credits-content">
                 <h4>SimControl 2026</h4>
-                <p>Créé avec ❤️ par <strong>liveweeeb</strong></p>
+                <p>Created with ❤️ by <strong>liveweeeb</strong></p>
                 
-                <h4>Aide à la conception</h4>
+                <h4>Design Help</h4>
                 <ul>
                     <li>Mr_Ewann 🚂🚃</li>
                 </ul>
 
-                <h4>Versions actuelle</h4>
+                <h4>Current Version</h4>
                 <ul>
-                    <li>SimControl: <code>beta-2026.01.03-1</code></li>
+                    <li>SimControl: <code>{{ current_version }}</code></li>
                 </ul>
-                
-                
                 
                 <div class="credits-links">
                     <a href="https://github.com/liveweeeb" target="_blank">🐈 GitHub</a>
@@ -118,10 +134,10 @@
     <script>
         function updateClock() {
             const now = new Date();
-            const time = now.toLocaleTimeString('fr-FR', { hour12: false });
+            const time = now.toLocaleTimeString(undefined, { hour12: false });
             document.getElementById('clock').textContent = time;
         }
-        setInterval(updateClock, 600);
+        setInterval(updateClock, 60);
         updateClock();
     </script>
 </body>

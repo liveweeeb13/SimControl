@@ -1,5 +1,5 @@
 const socket = io();
-const simcontrol = document.getElementById('simcontrol');
+const streamdeck = document.getElementById('streamdeck');
 const buttonStates = {};
 const pressedButtons = new Set();
 const holdTimers = {};
@@ -52,8 +52,10 @@ function isButtonBlocked(buttonId) {
     for (const rule of rules.stopmac) {
         if (rule.targets && rule.targets.includes(buttonId)) {
             // Vérifier la condition du trigger
-            if (rule.condition === "off") {
-                return !buttonStates[rule.trigger];
+            if (rule.condition === "on") {
+                return buttonStates[rule.trigger] === true;
+            } else if (rule.condition === "off") {
+                return buttonStates[rule.trigger] === false;
             }
         }
     }
@@ -218,7 +220,7 @@ allButtons.forEach(button => {
         });
     }
     
-    simcontrol.appendChild(btnElement);
+    streamdeck.appendChild(btnElement);
 });
 
 window.addEventListener('blur', () => {

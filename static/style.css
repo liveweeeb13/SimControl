@@ -24,7 +24,7 @@ body {
     align-items: center;
 }
 
-.simcontrol {
+.streamdeck {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -95,7 +95,7 @@ body {
         overflow: hidden;
     }
     
-    .simcontrol {
+    .streamdeck {
         width: 90vw;
         height: 90vh;
         gap: 5px 1px;

@@ -424,6 +424,69 @@ code {
     border: 1px solid rgba(0, 255, 65, 0.3);
 }
 
+.update-modal {
+    max-width: 500px;
+    text-align: center;
+    border: 2px solid #ff6b35;
+    background: linear-gradient(145deg, #2a1810, #1a0f08);
+}
+
+.update-modal h3 {
+    color: #ff6b35;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.update-info {
+    text-align: left;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 4px solid #ff6b35;
+}
+
+.update-info p {
+    margin: 10px 0;
+    color: #ccc;
+}
+
+.update-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.update-btn-later {
+    flex: 1;
+    padding: 12px;
+    background: rgba(108, 117, 125, 0.2);
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.update-btn-now {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 107, 53, 0.2);
+    border: 2px solid #ff6b35;
+    color: #ff6b35;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.update-btn-now:hover {
+    background: rgba(255, 107, 53, 0.3);
+}
+
+.update-btn-later:hover {
+    background: rgba(108, 117, 125, 0.3);
+}
+
 @media (max-width: 768px) {
     .cockpit-header {
         flex-direction: column;
