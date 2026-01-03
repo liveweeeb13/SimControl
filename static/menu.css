@@ -210,6 +210,30 @@ body {
     font-size: 14px;
 }
 
+#buttonForm select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #00ff41;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #00ff41;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+}
+
+#buttonForm select optgroup {
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff41;
+    font-weight: bold;
+    font-style: normal;
+}
+
+#buttonForm select option {
+    background: rgba(0, 0, 0, 0.9);
+    color: #00ff41;
+    padding: 5px;
+}
+
 #buttonForm input:focus {
     outline: none;
     box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);

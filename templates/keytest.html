@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Tester - SimControl</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a2e;
+            color: #00ff41;
+            padding: 20px;
+            text-align: center;
+        }
+        .key-display {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .key-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .key-code {
+            font-size: 18px;
+            color: #ffff00;
+        }
+        .instructions {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .back-btn {
+            background: #00ff41;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Key Tester</h1>
+    <div class="instructions">
+        Press any key to see its name and code
+    </div>
+    
+    <div class="key-display">
+        <div class="key-name" id="keyName">Press a key...</div>
+        <div class="key-code" id="keyCode">Code will appear here</div>
+    </div>
+    
+    <button class="back-btn" onclick="window.location.href='/'">← Back to Menu</button>
+    
+    <script>
+        document.addEventListener('keydown', function(event) {
+            event.preventDefault();
+            
+            const keyName = document.getElementById('keyName');
+            const keyCode = document.getElementById('keyCode');
+            
+            keyName.textContent = `Key: "${event.key}"`;
+            keyCode.textContent = `Code: "${event.code}" | Which: ${event.which} | KeyCode: ${event.keyCode}`;
+            
+            console.log('Key pressed:', {
+                key: event.key,
+                code: event.code,
+                which: event.which,
+                keyCode: event.keyCode,
+                location: event.location
+            });
+        });
+        
+        document.addEventListener('keyup', function(event) {
+            console.log('Key released:', event.key);
+        });
+    </script>
+</body>
+</html>

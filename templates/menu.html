@@ -35,6 +35,7 @@
                 <button onclick="editButtons()" class="menu-btn">🎛️ Edit Buttons</button>
                 <button onclick="editRules()" class="menu-btn">⚙️ Edit Rules</button>
                 <button onclick="showCredits()" class="menu-btn">ℹ️ Credits</button>
+                <button onclick="window.open('/keytest', '_blank')" class="menu-btn">🔍 Key Tester</button>
             </div>
         </div>
 
@@ -78,7 +79,152 @@
                 <input type="hidden" id="buttonId">
                 <label>Title: <input type="text" id="buttonTitle"></label>
                 <label>Label: <input type="text" id="buttonLabel"></label>
-                <label>Key: <input type="text" id="buttonKey" maxlength="1"></label>
+                <label>Key: 
+                    <select id="buttonKey">
+                        <option value="">-- Select Key --</option>
+                        <optgroup label="Letters">
+                            <option value="a">A</option>
+                            <option value="b">B</option>
+                            <option value="c">C</option>
+                            <option value="d">D</option>
+                            <option value="e">E</option>
+                            <option value="f">F</option>
+                            <option value="g">G</option>
+                            <option value="h">H</option>
+                            <option value="i">I</option>
+                            <option value="j">J</option>
+                            <option value="k">K</option>
+                            <option value="l">L</option>
+                            <option value="m">M</option>
+                            <option value="n">N</option>
+                            <option value="o">O</option>
+                            <option value="p">P</option>
+                            <option value="q">Q</option>
+                            <option value="r">R</option>
+                            <option value="s">S</option>
+                            <option value="t">T</option>
+                            <option value="u">U</option>
+                            <option value="v">V</option>
+                            <option value="w">W</option>
+                            <option value="x">X</option>
+                            <option value="y">Y</option>
+                            <option value="z">Z</option>
+                        </optgroup>
+                        <optgroup label="Numbers">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </optgroup>
+                        <optgroup label="Function Keys">
+                            <option value="F1">F1</option>
+                            <option value="F2">F2</option>
+                            <option value="F3">F3</option>
+                            <option value="F4">F4</option>
+                            <option value="F5">F5</option>
+                            <option value="F6">F6</option>
+                            <option value="F7">F7</option>
+                            <option value="F8">F8</option>
+                            <option value="F9">F9</option>
+                            <option value="F10">F10</option>
+                            <option value="F11">F11</option>
+                            <option value="F12">F12</option>
+                        </optgroup>
+                        <optgroup label="Special Keys">
+                            <option value=" ">Space</option>
+                            <option value="Enter">Enter</option>
+                            <option value="Tab">Tab</option>
+                            <option value="Escape">Escape</option>
+                            <option value="Backspace">Backspace</option>
+                            <option value="Delete">Delete</option>
+                            <option value="Insert">Insert</option>
+                            <option value="Home">Home</option>
+                            <option value="End">End</option>
+                            <option value="PageUp">Page Up</option>
+                            <option value="PageDown">Page Down</option>
+                            <option value="CapsLock">Caps Lock</option>
+                            <option value="NumLock">Num Lock</option>
+                            <option value="ScrollLock">Scroll Lock</option>
+                            <option value="Pause">Pause</option>
+                            <option value="PrintScreen">Print Screen</option>
+                        </optgroup>
+                        <optgroup label="Symbols & Punctuation">
+                            <option value="!">! (Exclamation)</option>
+                            <option value="@">@ (At)</option>
+                            <option value="#"># (Hash)</option>
+                            <option value="$">$ (Dollar)</option>
+                            <option value="%">% (Percent)</option>
+                            <option value="^">^ (Caret)</option>
+                            <option value="&">&amp; (Ampersand)</option>
+                            <option value="*">* (Asterisk)</option>
+                            <option value="(">( (Left Paren)</option>
+                            <option value=")"> ) (Right Paren)</option>
+                            <option value="-">- (Minus)</option>
+                            <option value="_">_ (Underscore)</option>
+                            <option value="=">= (Equal)</option>
+                            <option value="+">+ (Plus)</option>
+                            <option value="[">[ (Left Bracket)</option>
+                            <option value="]">] (Right Bracket)</option>
+                            <option value="{">{ (Left Brace)</option>
+                            <option value="}">} (Right Brace)</option>
+                            <option value="\\">\\ (Backslash)</option>
+                            <option value="|">| (Pipe)</option>
+                            <option value=";">; (Semicolon)</option>
+                            <option value=":">: (Colon)</option>
+                            <option value="'">' (Quote)</option>
+                            <option value='"'>" (Double Quote)</option>
+                            <option value=",">, (Comma)</option>
+                            <option value=".">. (Period)</option>
+                            <option value="/">/ (Slash)</option>
+                            <option value="?">? (Question)</option>
+                            <option value="<">&lt; (Less Than)</option>
+                            <option value=">">&gt; (Greater Than)</option>
+                            <option value="`">` (Backtick)</option>
+                            <option value="~">~ (Tilde)</option>
+                        </optgroup>
+                        <optgroup label="French Keys">
+                            <option value="é">é (e acute)</option>
+                            <option value="è">è (e grave)</option>
+                            <option value="à">à (a grave)</option>
+                            <option value="ù">ù (u grave)</option>
+                            <option value="ç">ç (c cedilla)</option>
+                            <option value="²">² (superscript 2)</option>
+                            <option value="§">§ (section)</option>
+                            <option value="°">° (degree)</option>
+                            <option value="µ">µ (micro)</option>
+                        </optgroup>
+                        <optgroup label="Arrow Keys">
+                            <option value="ArrowUp">Arrow Up</option>
+                            <option value="ArrowDown">Arrow Down</option>
+                            <option value="ArrowLeft">Arrow Left</option>
+                            <option value="ArrowRight">Arrow Right</option>
+                        </optgroup>
+                        <optgroup label="Numpad">
+                            <option value="Numpad0">Numpad 0</option>
+                            <option value="Numpad1">Numpad 1</option>
+                            <option value="Numpad2">Numpad 2</option>
+                            <option value="Numpad3">Numpad 3</option>
+                            <option value="Numpad4">Numpad 4</option>
+                            <option value="Numpad5">Numpad 5</option>
+                            <option value="Numpad6">Numpad 6</option>
+                            <option value="Numpad7">Numpad 7</option>
+                            <option value="Numpad8">Numpad 8</option>
+                            <option value="Numpad9">Numpad 9</option>
+                            <option value="NumpadEnter">Numpad Enter</option>
+                            <option value="NumpadAdd">Numpad +</option>
+                            <option value="NumpadSubtract">Numpad -</option>
+                            <option value="NumpadMultiply">Numpad *</option>
+                            <option value="NumpadDivide">Numpad /</option>
+                            <option value="NumpadDecimal">Numpad .</option>
+                        </optgroup>
+                    </select>
+                </label>
                 <label>Toggleable: <input type="checkbox" id="buttonToggleable"></label>
                 <label>Color OFF: <input type="color" id="buttonColor1"></label>
                 <label>Color ON: <input type="color" id="buttonColor2"></label>

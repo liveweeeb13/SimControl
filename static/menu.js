@@ -68,6 +68,29 @@ function openButtonEditor(buttonId) {
         holdTime: 0
     };
     
+    // Convertir les couleurs nommées en hex et nettoyer les couleurs
+    const colorNameToHex = {
+        'red': '#ff0000',
+        'green': '#00ff00',
+        'blue': '#0000ff',
+        'yellow': '#ffff00',
+        'black': '#000000',
+        'white': '#ffffff'
+    };
+    
+    function cleanColor(color) {
+        if (!color) return '#ffffff';
+        if (colorNameToHex[color]) return colorNameToHex[color];
+        // Enlever le 'ff' à la fin si présent
+        if (color.endsWith('ff') && color.length === 9) {
+            return color.slice(0, 7);
+        }
+        return color;
+    }
+    
+    const color1 = cleanColor(btn.color1);
+    const color2 = cleanColor(btn.color2);
+    
     content.innerHTML = `
         <span class="close" onclick="closeModal('buttonModal')">&times;</span>
         <h3>Modifier Bouton ${buttonId}</h3>
@@ -75,10 +98,105 @@ function openButtonEditor(buttonId) {
             <input type="hidden" id="buttonId" value="${buttonId}">
             <label>Titre: <input type="text" id="buttonTitle" value="${btn.title}"></label>
             <label>Label: <input type="text" id="buttonLabel" value="${btn.label}"></label>
-            <label>Touche: <input type="text" id="buttonKey" maxlength="1" value="${btn.key}"></label>
+            <label>Key: 
+                <select id="buttonKey">
+                    <option value="">-- Select Key --</option>
+                    <optgroup label="Letters">
+                        <option value="a">A</option>
+                        <option value="b">B</option>
+                        <option value="c">C</option>
+                        <option value="d">D</option>
+                        <option value="e">E</option>
+                        <option value="f">F</option>
+                        <option value="g">G</option>
+                        <option value="h">H</option>
+                        <option value="i">I</option>
+                        <option value="j">J</option>
+                        <option value="k">K</option>
+                        <option value="l">L</option>
+                        <option value="m">M</option>
+                        <option value="n">N</option>
+                        <option value="o">O</option>
+                        <option value="p">P</option>
+                        <option value="q">Q</option>
+                        <option value="r">R</option>
+                        <option value="s">S</option>
+                        <option value="t">T</option>
+                        <option value="u">U</option>
+                        <option value="v">V</option>
+                        <option value="w">W</option>
+                        <option value="x">X</option>
+                        <option value="y">Y</option>
+                        <option value="z">Z</option>
+                    </optgroup>
+                    <optgroup label="Numbers">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                    </optgroup>
+                    <optgroup label="Function Keys">
+                        <option value="F1">F1</option>
+                        <option value="F2">F2</option>
+                        <option value="F3">F3</option>
+                        <option value="F4">F4</option>
+                        <option value="F5">F5</option>
+                        <option value="F6">F6</option>
+                        <option value="F7">F7</option>
+                        <option value="F8">F8</option>
+                        <option value="F9">F9</option>
+                        <option value="F10">F10</option>
+                        <option value="F11">F11</option>
+                        <option value="F12">F12</option>
+                    </optgroup>
+                    <optgroup label="Special Keys">
+                        <option value=" ">Space</option>
+                        <option value="Enter">Enter</option>
+                        <option value="Tab">Tab</option>
+                        <option value="Escape">Escape</option>
+                        <option value="Backspace">Backspace</option>
+                        <option value="Delete">Delete</option>
+                        <option value="Insert">Insert</option>
+                        <option value="Home">Home</option>
+                        <option value="End">End</option>
+                        <option value="PageUp">Page Up</option>
+                        <option value="PageDown">Page Down</option>
+                    </optgroup>
+                    <optgroup label="Arrow Keys">
+                        <option value="ArrowUp">Arrow Up</option>
+                        <option value="ArrowDown">Arrow Down</option>
+                        <option value="ArrowLeft">Arrow Left</option>
+                        <option value="ArrowRight">Arrow Right</option>
+                    </optgroup>
+                    <optgroup label="Numpad">
+                        <option value="Numpad0">Numpad 0</option>
+                        <option value="Numpad1">Numpad 1</option>
+                        <option value="Numpad2">Numpad 2</option>
+                        <option value="Numpad3">Numpad 3</option>
+                        <option value="Numpad4">Numpad 4</option>
+                        <option value="Numpad5">Numpad 5</option>
+                        <option value="Numpad6">Numpad 6</option>
+                        <option value="Numpad7">Numpad 7</option>
+                        <option value="Numpad8">Numpad 8</option>
+                        <option value="Numpad9">Numpad 9</option>
+                        <option value="NumpadEnter">Numpad Enter</option>
+                        <option value="NumpadAdd">Numpad +</option>
+                        <option value="NumpadSubtract">Numpad -</option>
+                        <option value="NumpadMultiply">Numpad *</option>
+                        <option value="NumpadDivide">Numpad /</option>
+                        <option value="NumpadDecimal">Numpad .</option>
+                    </optgroup>
+                </select>
+            </label>
             <label>Toggleable: <input type="checkbox" id="buttonToggleable" ${btn.toggleable ? 'checked' : ''}></label>
-            <label>Couleur OFF: <input type="color" id="buttonColor1" value="${btn.color1}"></label>
-            <label>Couleur ON: <input type="color" id="buttonColor2" value="${btn.color2}"></label>
+            <label>Couleur OFF: <input type="color" id="buttonColor1" value="${color1}"></label>
+            <label>Couleur ON: <input type="color" id="buttonColor2" value="${color2}"></label>
             <label>Hold Time (ms): <input type="number" id="buttonHoldTime" min="0" value="${btn.holdTime || 0}"></label>
             <div class="modal-buttons">
                 <button type="button" onclick="saveButton()">Sauvegarder</button>
@@ -87,6 +205,11 @@ function openButtonEditor(buttonId) {
             </div>
         </form>
     `;
+    
+    // Sélectionner automatiquement la key sauvegardée
+    if (btn.key) {
+        document.getElementById('buttonKey').value = btn.key;
+    }
 }
 
 function saveButton() {
@@ -112,7 +235,7 @@ function saveButton() {
         currentConfig.buttons.push(buttonData);
     }
     
-    alert('Bouton sauvegardé!');
+    alert('Button saved!');
     editButtons();
 }
 

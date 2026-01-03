@@ -80,8 +80,10 @@ allButtons.forEach(button => {
         
         btnElement.addEventListener('mousedown', (e) => {
             e.preventDefault();
+            console.log(`[DEBUG] Button ${button.id} mousedown, key: ${button.key}`);
             if (button.key && !pressedButtons.has(button.id) && !isButtonBlocked(button.id)) {
                 pressedButtons.add(button.id);
+                console.log(`[DEBUG] Emitting keydown for key: ${button.key}`);
                 socket.emit('keydown', {key: button.key});
                 btnElement.classList.add('pressed');
                 
@@ -114,8 +116,10 @@ allButtons.forEach(button => {
         
         btnElement.addEventListener('mouseup', (e) => {
             e.preventDefault();
+            console.log(`[DEBUG] Button ${button.id} mouseup, key: ${button.key}`);
             if (button.key && pressedButtons.has(button.id)) {
                 pressedButtons.delete(button.id);
+                console.log(`[DEBUG] Emitting keyup for key: ${button.key}`);
                 socket.emit('keyup', {key: button.key});
                 
                 // Annuler le timer si relâché avant la fin
@@ -244,9 +248,9 @@ window.addEventListener('blur', () => {
 });
 
 socket.on('connect', () => {
-    console.log('Connecté au serveur');
+    console.log('✅ Connecté au serveur');
 });
 
 socket.on('disconnect', () => {
-    console.log('Déconnecté du serveur');
+    console.log('❌ Déconnecté du serveur');
 });
