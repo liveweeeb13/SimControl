@@ -24,7 +24,7 @@ body {
     align-items: center;
 }
 
-.streamdeck {
+.simcontrol {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(5, 1fr);
@@ -78,4 +78,41 @@ body {
 
 .button.empty:hover {
     transform: none;
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    
+    .container {
+        width: 100vw;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    
+    .simcontrol {
+        width: 90vw;
+        height: 90vh;
+        gap: 5px 1px;
+        padding: 5px;
+        box-sizing: border-box;
+        overflow: hidden;
+        margin: auto;
+    }
+    
+    .button {
+        font-size: 12px;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+    }
+    
+    .button-label {
+        font-size: 18px;
+    }
 }

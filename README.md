@@ -1,48 +1,96 @@
-#  Controlleur/StreamDeck EN DEVELOPPEMENT ACTIF
+# SimControl 2026 🚀
 
-Controlleur/StreamDeck web par liveweeeb
+**Contrôleur web moderne pour simulateurs** par liveweeeb
 
-## Installation
+[![Version](https://img.shields.io/badge/version-beta--2026.01.03--1-blue)](https://github.com/liveweeeb/SimControl)
+[![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
+
+
+
+## 🚀 Installation rapide
 
 ```bash
+# Cloner le projet
+git clone https://github.com/liveweeeb/SimControl.git
+cd SimControl
+
+# Installer les dépendances
 pip install -r requirements.txt
-```
 
-## Démarrage
-
-```bash
+# Lancer SimControl
 python app.py
 ```
 
-Puis ouvrez http://IP:3001 __*Utilisatation sur mobile ou tablette conseillé*__ 
+**Accès** : http://IP:3001
 
-## Configuration
+> 💡 **Recommandé** : Utilisation sur mobile/tablette en mode paysage
 
-## Modifiez `static/config.js` 
-**Ajouter/modifier les boutons :**
+## 🎮 Utilisation
 
+### 1. Configuration initiale
+- Cliquez sur "🎛️ Modifier Boutons"
+- Configurez vos boutons (35 emplacements disponibles)
+- Définissez les règles si nécessaire
+
+### 2. Lancement
+- Cliquez sur "🚀 Démarrer SimControl"
+- Votre controlleur est prêt !
+
+## ⚙️ Configuration avancée
+
+### Structure des boutons
 ```js
-    {
-        id: 1, // Numero du bouton
-        title: "Batterie", // Nom du bouton (nom affiché dans l'interface)
-        label: "🔋", // Nom affiché
-        key: "w", // Touche associée
-        toggleable: true, // Est-ce que le bouton est un toggle (true) ou un bouton poussoir (false)
-        color1: "red", // Couleur quand le bouton est off
-        color2: "green", // Couleur quand le bouton est on
-        holdTime: 2500 // Temps en ms à maintenir la touche pour activer l'action (non requis)
-    }
+{
+    id: 1,                    // Position (1-35)
+    title: "Batterie",        // Nom descriptif
+    label: "🔋",              // Emoji/texte affiché
+    key: "w",                 // Touche clavier
+    toggleable: true,         // Toggle ou poussoir
+    color1: "#ff0000",        // Couleur OFF
+    color2: "#00ff00",        // Couleur ON
+    holdTime: 2500            // Temps maintien (ms)
+}
 ```
-**Ajouter des regles**
+
+### Règles automatiques
 ```js
 const rules = {
+    // Désactivation automatique
     autodisable: [
         {
-            trigger: 1, // Quand le bouton 1 est desactivé
-            targets: [2], // Bouton 2
-            condition: "off" // Se met en desactive
+            trigger: 1,           // Bouton déclencheur
+            targets: [2, 3],      // Boutons à désactiver
+            condition: "off"      // Condition (on/off)
         }
     ],
-    stopmac: [2,3] // Les ID des boutons qui seront freeze dans leurs etats actuels 
+    // Blocage conditionnel
+    stopmac: [
+        {
+            trigger: 1,           // Bouton déclencheur
+            targets: [4, 5],      // Boutons à bloquer
+            condition: "off"      // Quand bloquer
+        }
+    ]
 };
 ```
+
+## 🔄 Auto-Update
+
+SimControl se met à jour automatiquement au démarrage :
+- ✅ Code source toujours à jour
+- ✅ Nouvelles fonctionnalités instantanées
+- ✅ Corrections de bugs automatiques
+- ✅ Configuration utilisateur préservée
+
+## 🛠️ Développement
+
+**Créé avec ❤️ par liveweeeb**
+
+
+
+## 🤝 Contribution
+
+**Aide à la conception** : Mr_Ewann 🚂🚃
+
+
+**SimControl 2026**

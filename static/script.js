@@ -1,10 +1,10 @@
 const socket = io();
-const streamdeck = document.getElementById('streamdeck');
+const simcontrol = document.getElementById('simcontrol');
 const buttonStates = {};
 const pressedButtons = new Set();
 const holdTimers = {};
 
-// Générer tous les boutons (35 au total)
+// Générer tous les boutons vides pour les IDs manquants
 const allButtons = [];
 for (let i = 1; i <= 35; i++) {
     const existingButton = buttons.find(btn => btn.id === i);
@@ -28,26 +28,33 @@ function applyAutodisableRules(triggerId, isOn) {
     if (!rules.autodisable) return;
     
     rules.autodisable.forEach(rule => {
-        if (rule.trigger === triggerId && rule.condition === 'off' && !isOn) {
-            rule.targets.forEach(targetId => {
-                const targetButton = allButtons.find(b => b.id === targetId);
-                const targetElement = document.getElementById(`btn-${targetId}`);
-                if (targetButton && targetElement && buttonStates[targetId]) {
-                    buttonStates[targetId] = false;
-                    targetElement.style.background = targetButton.color1;
-                    socket.emit('keyup', {key: targetButton.key});
-                }
-            });
+        if (rule.trigger === triggerId) {
+            if ((rule.condition === 'off' && !isOn) || (rule.condition === 'on' && isOn)) {
+                rule.targets.forEach(targetId => {
+                    const targetButton = allButtons.find(b => b.id === targetId);
+                    const targetElement = document.getElementById(`btn-${targetId}`);
+                    if (targetButton && targetElement && buttonStates[targetId]) {
+                        buttonStates[targetId] = false;
+                        targetElement.style.background = targetButton.color1;
+                        targetElement.classList.remove('pressed');
+                        socket.emit('keyup', {key: targetButton.key});
+                    }
+                });
+            }
         }
     });
 }
 
 // Vérifier si un bouton est freeze
 function isButtonBlocked(buttonId) {
-    if (rules.stopmac && rules.stopmac.targets && rules.stopmac.targets.includes(buttonId)) {
-        // Vérifier la condition du trigger
-        if (rules.stopmac.condition === "off") {
-            return !buttonStates[rules.stopmac.trigger];
+    if (!rules.stopmac) return false;
+    
+    for (const rule of rules.stopmac) {
+        if (rule.targets && rule.targets.includes(buttonId)) {
+            // Vérifier la condition du trigger
+            if (rule.condition === "off") {
+                return !buttonStates[rule.trigger];
+            }
         }
     }
     return false;
@@ -82,17 +89,23 @@ allButtons.forEach(button => {
                         holdTimers[button.id] = setTimeout(() => {
                             buttonStates[button.id] = true;
                             btnElement.style.background = button.color2;
+                            btnElement.classList.add('pressed');
+                            delete holdTimers[button.id];
                             applyAutodisableRules(button.id, buttonStates[button.id]);
                         }, button.holdTime);
                     } else {
                         // Bouton normal ou désactivation - changement immédiat
                         buttonStates[button.id] = !buttonStates[button.id];
                         btnElement.style.background = buttonStates[button.id] ? button.color2 : button.color1;
+                        if (buttonStates[button.id]) {
+                            btnElement.classList.add('pressed'); // Reste enfoncé si activé
+                        }
                         applyAutodisableRules(button.id, buttonStates[button.id]);
                     }
                 } else {
                     // Bouton non-toggleable - changement immédiat
                     btnElement.style.background = button.color2;
+                    applyAutodisableRules(button.id, true);
                 }
             }
         });
@@ -100,22 +113,29 @@ allButtons.forEach(button => {
         btnElement.addEventListener('mouseup', (e) => {
             e.preventDefault();
             if (button.key && pressedButtons.has(button.id)) {
-                pressedButtons.delete(button.id); // FDP
+                pressedButtons.delete(button.id);
                 socket.emit('keyup', {key: button.key});
-                btnElement.classList.remove('pressed');
                 
                 // Annuler le timer si relâché avant la fin
                 if (holdTimers[button.id]) {
                     clearTimeout(holdTimers[button.id]);
                     delete holdTimers[button.id];
+                    btnElement.classList.remove('pressed');
+                    return;
                 }
                 
+                // Pour les boutons toggle, garder pressed si activé
                 if (button.toggleable) {
                     if (!buttonStates[button.id]) {
                         btnElement.style.background = button.color1;
+                        btnElement.classList.remove('pressed');
+                    } else {
+                        // Garder enfoncé si activé
+                        btnElement.classList.add('pressed');
                     }
                 } else {
                     btnElement.style.background = button.color1;
+                    btnElement.classList.remove('pressed');
                 }
             }
         });
@@ -147,15 +167,20 @@ allButtons.forEach(button => {
                         holdTimers[button.id] = setTimeout(() => {
                             buttonStates[button.id] = true;
                             btnElement.style.background = button.color2;
+                            btnElement.classList.add('pressed');
                             applyAutodisableRules(button.id, buttonStates[button.id]);
                         }, button.holdTime);
                     } else {
                         buttonStates[button.id] = !buttonStates[button.id];
                         btnElement.style.background = buttonStates[button.id] ? button.color2 : button.color1;
+                        if (buttonStates[button.id]) {
+                            btnElement.classList.add('pressed');
+                        }
                         applyAutodisableRules(button.id, buttonStates[button.id]);
                     }
                 } else {
                     btnElement.style.background = button.color2;
+                    applyAutodisableRules(button.id, true);
                 }
             }
         });
@@ -165,19 +190,25 @@ allButtons.forEach(button => {
             if (button.key && pressedButtons.has(button.id)) {
                 pressedButtons.delete(button.id);
                 socket.emit('keyup', {key: button.key});
-                btnElement.classList.remove('pressed');
                 
                 if (holdTimers[button.id]) {
                     clearTimeout(holdTimers[button.id]);
                     delete holdTimers[button.id];
+                    btnElement.classList.remove('pressed');
+                    return;
                 }
                 
                 if (button.toggleable) {
                     if (!buttonStates[button.id]) {
                         btnElement.style.background = button.color1;
+                        btnElement.classList.remove('pressed');
+                    } else {
+                        // Garder enfoncé si activé
+                        btnElement.classList.add('pressed');
                     }
                 } else {
                     btnElement.style.background = button.color1;
+                    btnElement.classList.remove('pressed');
                 }
             }
         });
@@ -187,7 +218,7 @@ allButtons.forEach(button => {
         });
     }
     
-    streamdeck.appendChild(btnElement);
+    simcontrol.appendChild(btnElement);
 });
 
 window.addEventListener('blur', () => {
