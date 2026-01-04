@@ -248,9 +248,9 @@ window.addEventListener('blur', () => {
 });
 
 socket.on('connect', () => {
-    console.log('✅ Connecté au serveur');
+    console.log('✅ Connected to the server');
 });
 
 socket.on('disconnect', () => {
-    console.log('❌ Déconnecté du serveur');
+    console.log('❌ Disconnected from the server');
 });

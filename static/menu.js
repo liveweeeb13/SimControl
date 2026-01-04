@@ -23,9 +23,9 @@ function importConfig(event) {
         try {
             const config = JSON.parse(e.target.result);
             currentConfig = config;
-            alert('Configuration importée avec succès!');
+            alert('Configuration successfully imported!');
         } catch (error) {
-            alert('Erreur lors de l\'import: ' + error.message);
+            alert('Error during import: ' + error.message);
         }
     };
     reader.readAsText(file);
@@ -35,7 +35,7 @@ function editButtons() {
     const modal = document.getElementById('buttonModal');
     const content = modal.querySelector('.modal-content');
     
-    let gridHTML = '<h3>Sélectionner un bouton à modifier</h3><div class="button-grid">';
+    let gridHTML = '<h3>Select a button to edit</h3><div class="button-grid">';
     for (let i = 1; i <= 35; i++) {
         const btn = currentConfig.buttons.find(b => b.id === i);
         const configured = btn && btn.key !== '';
@@ -68,7 +68,6 @@ function openButtonEditor(buttonId) {
         holdTime: 0
     };
     
-    // Convertir les couleurs nommées en hex et nettoyer les couleurs
     const colorNameToHex = {
         'red': '#ff0000',
         'green': '#00ff00',
@@ -81,7 +80,6 @@ function openButtonEditor(buttonId) {
     function cleanColor(color) {
         if (!color) return '#ffffff';
         if (colorNameToHex[color]) return colorNameToHex[color];
-        // Enlever le 'ff' à la fin si présent
         if (color.endsWith('ff') && color.length === 9) {
             return color.slice(0, 7);
         }
@@ -195,18 +193,17 @@ function openButtonEditor(buttonId) {
                 </select>
             </label>
             <label>Toggleable: <input type="checkbox" id="buttonToggleable" ${btn.toggleable ? 'checked' : ''}></label>
-            <label>Couleur OFF: <input type="color" id="buttonColor1" value="${color1}"></label>
-            <label>Couleur ON: <input type="color" id="buttonColor2" value="${color2}"></label>
+            <label>Color OFF: <input type="color" id="buttonColor1" value="${color1}"></label>
+            <label>Color ON: <input type="color" id="buttonColor2" value="${color2}"></label>
             <label>Hold Time (ms): <input type="number" id="buttonHoldTime" min="0" value="${btn.holdTime || 0}"></label>
             <div class="modal-buttons">
-                <button type="button" onclick="saveButton()">Sauvegarder</button>
-                <button type="button" onclick="deleteButton()">Supprimer</button>
-                <button type="button" onclick="editButtons()">Retour</button>
+                <button type="button" onclick="saveButton()">Save</button>
+                <button type="button" onclick="deleteButton()">Delete</button>
+                <button type="button" onclick="editButtons()">Back</button>
             </div>
         </form>
     `;
     
-    // Sélectionner automatiquement la key sauvegardée
     if (btn.key) {
         document.getElementById('buttonKey').value = btn.key;
     }
@@ -285,8 +282,8 @@ function displayRules() {
 }
 
 function addRule(type) {
-    const trigger = prompt('ID du bouton déclencheur:');
-    const targets = prompt('IDs des boutons cibles (séparés par des virgules):');
+    const trigger = prompt('Trigger button ID:');
+    const targets = prompt('Target button IDs (separated by commas):');
     const condition = prompt('Condition (on/off):');
     
     if (trigger && targets && condition) {
@@ -307,7 +304,7 @@ function deleteRule(type, index) {
 }
 
 function saveRules() {
-    alert('Règles sauvegardées!');
+    alert('Rules saved!');
     closeModal('rulesModal');
 }
 

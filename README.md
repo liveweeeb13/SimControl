@@ -1,6 +1,6 @@
 # SimControl 2026 🚀
 
-**Modern web controller for simulators** by liveweeeb
+SimControl is a web controller that transforms your device into a button interface for simulators. You can configure 35 buttons with colors, labels, and interaction rules, then control your games from your mobile/tablet via a browser.
 
 [![Version](https://img.shields.io/badge/version-beta--2026.01.03--1-blue)](https://github.com/liveweeeb/SimControl)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
@@ -10,6 +10,15 @@
 **Access**: http://IP:3001
 
 > 💡 **Recommended**: Use on mobile/tablet in landscape mode
+
+## 📦 Installation
+
+1. Go to [SimControl Releases](https://github.com/liveweeeb13/SimControl/releases/tag/ALL-1)
+2. Download the latest release
+3. Run `UPDATE.exe` to install SimControl
+4. Launch the application (with the ``start.bat``)
+
+[Any problem, come talk to us ](https://github.com/liveweeeb13/SimControl?tab=readme-ov-file#-support)
 
 ## 🎮 Usage
 
@@ -65,7 +74,7 @@ const rules = {
 
 ## 🤝 Contribution
 
-**Design Help**: Mr_Ewann 🚂🚃
+**Helper**: Mr_Ewann 🚂🚃
 
 ## 📞 Support
 
@@ -75,4 +84,11 @@ const rules = {
 
 ---
 
+![f](https://media.discordapp.net/attachments/1452248393064775732/1457375436463013999/image.png?ex=695bc624&is=695a74a4&hm=c7f740a22c1b91b351fdc8eed6112aac03b748bcd56a91503699bf7d8028f52f&=&format=webp&quality=lossless&width=1142&height=544)
+
+---
+
 **Created with ❤️ by liveweeeb | SimControl 2026**
+
+
+
