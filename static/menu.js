@@ -303,11 +303,6 @@ function deleteRule(type, index) {
     displayRules();
 }
 
-function saveRules() {
-    alert('Rules saved!');
-    closeModal('rulesModal');
-}
-
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
@@ -327,4 +322,251 @@ function startSimControl() {
 function showCredits() {
     const modal = document.getElementById('creditsModal');
     modal.style.display = 'block';
+}
+
+function clearConfig() {
+    if (confirm('Are you sure you want to clear all configuration? This will remove all buttons and rules.')) {
+        currentConfig = {
+            buttons: [],
+            rules: { autodisable: [], stopmac: [] }
+        };
+        alert('Configuration cleared!');
+    }
+}
+
+let tutorialActive = false;
+
+const originalEditButtons = editButtons;
+
+function showTutorial() {
+    tutorialStep = 1;
+    tutorialActive = true;
+    showTutorialStep();
+}
+
+function showTutorialStep() {
+    const overlay = document.getElementById('tutorialOverlay');
+    const tooltip = document.getElementById('tutorialTooltip');
+    
+    if (tutorialStep === 1) {
+        const editBtn = document.querySelector('button[onclick="editButtons()"]');
+        positionTooltip(tooltip, editBtn);
+        tooltip.innerHTML = `
+            <div class="tutorial-step-content">
+                <h4>Create your first button!</h4>
+                <p>Click on "🎛️ Edit Buttons" to start</p>
+                <div class="tutorial-arrow"></div>
+            </div>
+        `;
+        overlay.style.display = 'block';
+    }
+}
+
+function positionTooltip(tooltip, target) {
+    currentTargetElement = target;
+    const rect = target.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const arrow = tooltip.querySelector('.tutorial-arrow');
+    
+    arrow.style.top = '';
+    arrow.style.bottom = '';
+    arrow.style.left = '';
+    arrow.style.right = '';
+    arrow.style.borderTop = '';
+    arrow.style.borderBottom = '';
+    arrow.style.borderLeft = '';
+    arrow.style.borderRight = '';
+    
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const spaceRight = window.innerWidth - rect.right;
+    const spaceLeft = rect.left;
+    
+    if (spaceBelow >= 150) {
+        tooltip.style.top = (rect.bottom + 10) + 'px';
+        tooltip.style.left = Math.max(10, rect.left + (rect.width / 2) - 150) + 'px';
+        arrow.style.top = '-8px';
+        arrow.style.left = Math.min(280, Math.max(20, rect.left + (rect.width / 2) - Math.max(10, rect.left + (rect.width / 2) - 150))) + 'px';
+        arrow.style.borderBottom = '8px solid #ffeb3b';
+        arrow.style.borderLeft = '8px solid transparent';
+        arrow.style.borderRight = '8px solid transparent';
+    } else if (spaceAbove >= 150) {
+        tooltip.style.top = (rect.top - 150) + 'px';
+        tooltip.style.left = Math.max(10, rect.left + (rect.width / 2) - 150) + 'px';
+        arrow.style.bottom = '-8px';
+        arrow.style.left = Math.min(280, Math.max(20, rect.left + (rect.width / 2) - Math.max(10, rect.left + (rect.width / 2) - 150))) + 'px';
+        arrow.style.borderTop = '8px solid #ffeb3b';
+        arrow.style.borderLeft = '8px solid transparent';
+        arrow.style.borderRight = '8px solid transparent';
+    } else if (spaceRight >= 320) {
+        tooltip.style.top = Math.max(10, rect.top - 50) + 'px';
+        tooltip.style.left = (rect.right + 10) + 'px';
+        arrow.style.left = '-8px';
+        arrow.style.top = '20px';
+        arrow.style.borderRight = '8px solid #ffeb3b';
+        arrow.style.borderTop = '8px solid transparent';
+        arrow.style.borderBottom = '8px solid transparent';
+    } else {
+        tooltip.style.top = Math.max(10, rect.top - 50) + 'px';
+        tooltip.style.left = Math.max(10, rect.left - 320) + 'px';
+        arrow.style.right = '-8px';
+        arrow.style.top = '20px';
+        arrow.style.borderLeft = '8px solid #ffeb3b';
+        arrow.style.borderTop = '8px solid transparent';
+        arrow.style.borderBottom = '8px solid transparent';
+    }
+}
+
+function nextTutorialStep() {
+    tutorialStep++;
+    if (tutorialStep > 4) {
+        closeTutorial();
+    } else {
+        showTutorialStep();
+    }
+}
+
+function closeTutorial() {
+    tutorialActive = false;
+    currentTargetElement = null;
+    document.getElementById('tutorialOverlay').style.display = 'none';
+}
+
+function markTutorialSeen() {
+    localStorage.setItem('tutorialSeen', 'true');
+    closeTutorial();
+}
+
+function showHelpModal() {
+    document.getElementById('helpModal').style.display = 'block';
+}
+
+let currentTargetElement = null;
+
+window.addEventListener('resize', function() {
+    if (tutorialActive && currentTargetElement) {
+        const tooltip = document.getElementById('tutorialTooltip');
+        positionTooltip(tooltip, currentTargetElement);
+    }
+});
+
+editButtons = function() {
+    originalEditButtons();
+    if (tutorialActive && tutorialStep === 1) {
+        setTimeout(() => {
+            tutorialStep = 2;
+            const tooltip = document.getElementById('tutorialTooltip');
+            const modal = document.getElementById('buttonModal');
+            const gridBtn = document.querySelector('.grid-button');
+            if (gridBtn) {
+                modal.appendChild(tooltip);
+                positionTooltip(tooltip, gridBtn);
+                tooltip.innerHTML = `
+                    <div class="tutorial-step-content">
+                        <h4>Select a position</h4>
+                        <p>Click on any number to configure that button</p>
+                        <div class="tutorial-arrow"></div>
+                    </div>
+                `;
+            }
+        }, 500);
+    }
+};
+
+const originalOpenButtonEditor = openButtonEditor;
+openButtonEditor = function(buttonId) {
+    originalOpenButtonEditor(buttonId);
+    if (tutorialActive && tutorialStep === 2) {
+        setTimeout(() => {
+            tutorialStep = 3;
+            const tooltip = document.getElementById('tutorialTooltip');
+            const modal = document.getElementById('buttonModal');
+            const titleInput = document.getElementById('buttonTitle');
+            if (titleInput) {
+                modal.appendChild(tooltip);
+                highlightElement(titleInput);
+                positionTooltip(tooltip, titleInput);
+                tooltip.innerHTML = `
+                    <div class="tutorial-step-content">
+                        <h4>Enter a title</h4>
+                        <p>Give your button a name (e.g., "Engine", "Lights")</p>
+                        <div class="tutorial-arrow"></div>
+                    </div>
+                `;
+                
+                titleInput.addEventListener('input', function() {
+                    if (titleInput.value.length > 0 && tutorialStep === 3) {
+                        setTimeout(() => {
+                            tutorialStep = 4;
+                            const labelInput = document.getElementById('buttonLabel');
+                            highlightElement(labelInput);
+                            positionTooltip(tooltip, labelInput);
+                            tooltip.innerHTML = `
+                                <div class="tutorial-step-content">
+                                    <h4>Add a label</h4>
+                                    <p>Text shown on button (emoji or text)</p>
+                                    <div class="tutorial-arrow"></div>
+                                </div>
+                            `;
+                            
+                            labelInput.addEventListener('input', function() {
+                                if (labelInput.value.length > 0 && tutorialStep === 4) {
+                                    setTimeout(() => {
+                                        tutorialStep = 5;
+                                        const keySelect = document.getElementById('buttonKey');
+                                        highlightElement(keySelect);
+                                        positionTooltip(tooltip, keySelect);
+                                        tooltip.innerHTML = `
+                                            <div class="tutorial-step-content">
+                                                <h4>Select a key</h4>
+                                                <p>Choose which keyboard key this button will send</p>
+                                                <div class="tutorial-arrow"></div>
+                                            </div>
+                                        `;
+                                        
+                                        keySelect.addEventListener('change', function() {
+                                            if (keySelect.value && tutorialStep === 5) {
+                                                setTimeout(() => {
+                                                    const saveBtn = document.querySelector('button[onclick="saveButton()"]');
+                                                    highlightElement(saveBtn);
+                                                    positionTooltip(tooltip, saveBtn);
+                                                    tooltip.innerHTML = `
+                                                        <div class="tutorial-step-content">
+                                                            <h4>Save your button!</h4>
+                                                            <p>Click Save to create your first button</p>
+                                                            <div class="tutorial-arrow"></div>
+                                                        </div>
+                                                    `;
+                                                    
+                                                    setTimeout(() => {
+                                                        markTutorialSeen();
+                                                    }, 3000);
+                                                }, 500);
+                                            }
+                                        }, {once: true});
+                                    }, 500);
+                                }
+                            }, {once: true});
+                        }, 500);
+                    }
+                }, {once: true});
+            }
+        }, 500);
+    }
+};
+
+function highlightElement(element) {
+    document.querySelectorAll('.tutorial-highlight').forEach(el => {
+        el.classList.remove('tutorial-highlight');
+    });
+    
+    element.classList.add('tutorial-highlight');
+    
+    const overlay = document.getElementById('tutorialOverlay');
+    overlay.style.background = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.display = 'block';
+}
+
+if (!localStorage.getItem('tutorialSeen')) {
+    setTimeout(() => showTutorial(), 1000);
 }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimControl - Configuration</title>
+    <link rel="icon" type="image/x-icon" href="/static/favico.ico">
     <link rel="stylesheet" href="/static/menu.css">
 </head>
 <body>
@@ -11,6 +12,8 @@
         <div class="header-left">
             <div class="status-light green"></div>
             <span>SYSTEM READY</span>
+            <div class="header-separator"></div>
+            <button onclick="showHelpModal()" class="help-btn">Need help?</button>
         </div>
         <h1 class="cockpit-title">SimControl By liveweeeb</h1>
         <div class="header-right">
@@ -25,6 +28,8 @@
             <div class="menu-buttons">
                 <button onclick="exportConfig()" class="menu-btn">📤 Export Config</button>
                 <button onclick="document.getElementById('importFile').click()" class="menu-btn">📥 Import Config</button>
+                <button onclick="clearConfig()" class="menu-btn">🗑️ Clear Config</button>
+                <button onclick="showTutorial()" class="menu-btn">📖 Tutorial</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importConfig(event)">
             </div>
         </div>
@@ -242,9 +247,78 @@
             <span class="close" onclick="closeModal('rulesModal')">&times;</span>
             <h3>Edit Rules</h3>
             <div id="rulesContent"></div>
-            <button onclick="addRule('autodisable')">+ Add Autodisable</button>
-            <button onclick="addRule('stopmac')">+ Add Stopmac</button>
-            <button onclick="saveRules()">Save Rules</button>
+            <div class="modal-buttons">
+                <button onclick="addRule('autodisable')" class="menu-btn">+ Add Autodisable</button>
+                <button onclick="addRule('stopmac')" class="menu-btn">+ Add Stopmac</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div class="tutorial-tooltip" id="tutorialTooltip">
+            <div class="tutorial-step-content">
+                <h4>Create your first button!</h4>
+                <p>Click on "🎛️ Edit Buttons" to start configuring your controller</p>
+                <div class="tutorial-arrow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('helpModal')">&times;</span>
+            <h3>Besoin d'aide ?</h3>
+            <div class="help-content">
+                <h4>Démarrage rapide</h4>
+                <p>SimControl transforme votre appareil en contrôleur de boutons pour simulateurs.</p>
+                
+                <h4>Création de boutons</h4>
+                <ol>
+                    <li>Cliquez sur "🎛️ Modifier Boutons" pour configurer votre contrôleur</li>
+                    <li>Sélectionnez une position (1-35) sur la grille</li>
+                    <li>Remplissez le Titre, Label et sélectionnez une Touche</li>
+                    <li>Cliquez sur "Sauvegarder" pour créer le bouton</li>
+                    <li>Cliquez sur "Démarrer SimControl" pour lancer votre contrôleur</li>
+                </ol>
+                
+                <h4>Paramètres des boutons</h4>
+                <ul>
+                    <li><strong>Titre :</strong> Nom interne pour l'organisation</li>
+                    <li><strong>Label :</strong> Texte/emoji affiché sur le bouton</li>
+                    <li><strong>Touche :</strong> Touche clavier envoyée lors de l'appui</li>
+                    <li><strong>Basculable :</strong> Le bouton reste enfoncé (OUI) ou momentané (NON)</li>
+                    <li><strong>Couleurs :</strong> Couleurs des états OFF et ON</li>
+                    <li><strong>Temps de maintien (pour toggleable: true):</strong> Durée de maintien de la touche (millisecondes)</li>
+                </ul>
+                
+                <h4>Règles automatiques</h4>
+                <p>Les règles permettent d'automatiser le comportement des boutons :</p>
+                <ul>
+                    <li><strong>Autodisable :</strong> Désactive automatiquement des boutons cibles quand un bouton déclencheur change d'état</li>
+                    <li><strong>Stopmac :</strong> Bloque l'interaction avec des boutons cibles selon l'état d'un bouton déclencheur (FREEZE)</li>
+                </ul>
+                
+                <h4>Création de règles</h4>
+                <ol>
+                    <li>Cliquez sur "⚙️ Modifier Règles"</li>
+                    <li>Choisissez "+ Ajouter Autodisable" ou "+ Ajouter Stopmac"</li>
+                    <li>Entrez l'ID du bouton déclencheur (1-35)</li>
+                    <li>Entrez les IDs des boutons cibles séparés par des virgules</li>
+                    <li>Choisissez la condition : "on" (activé) ou "off" (désactivé)</li>
+                </ol>
+                
+                <h4>Besoin de plus d'aide ?</h4>
+                <ul>
+                    <li><strong>Autodisable :</strong> Bouton 1 (Batterie) désactive boutons 2,3 quand il est "off"</li>
+                    <li><strong>Stopmac :</strong> Bouton 1 (Maître) bloque boutons 4,5,6 quand il est "off"</li>
+                </ul>
+                
+                <h4>Besoin d'aide supplémentaire ?</h4>
+                <div class="help-buttons">
+                    <button onclick="showTutorial(); closeModal('helpModal');" class="menu-btn">📖 Tutoriel interactif</button>
+                    <button onclick="window.open('https://discord.gg/ukJegYrXWR', '_blank')" class="menu-btn">💬 Support Discord</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -256,7 +330,7 @@
                 <h4>SimControl 2026</h4>
                 <p>Created with ❤️ by <strong>liveweeeb</strong></p>
                 
-                <h4>Design Help</h4>
+                <h4>Help</h4>
                 <ul>
                     <li>Mr_Ewann 🚂🚃</li>
                 </ul>
