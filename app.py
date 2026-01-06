@@ -1,18 +1,34 @@
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
-from pynput.keyboard import Key, Controller
 import threading
 import json
 import requests
 import os
-import ctypes
-from ctypes import wintypes
+import platform
+
+# Import keyboard library based on OS
+if platform.system() == "Windows":
+    from pynput.keyboard import Key, Controller
+    import ctypes
+    from ctypes import wintypes
+else:
+    # For Linux servers without X11, use keyboard library instead
+    try:
+        from pynput.keyboard import Key, Controller
+    except ImportError:
+        import keyboard as kb_lib
+        Controller = None
+        Key = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'jugfhuigfyhghfyghfygfgfgff4gf545g5g5h7548ù74ù'
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-keyboard = Controller()
+# Initialize keyboard controller if available
+if Controller:
+    keyboard = Controller()
+else:
+    keyboard = None
 pressed_keys = set()
 
 def check_version():
@@ -84,14 +100,23 @@ def handle_keydown(data):
     if key not in pressed_keys:
         pressed_keys.add(key)
         try:
+            if not keyboard:
+                print(f"[WARNING] No keyboard controller available on this system")
+                return
+                
             if key == 'space':
                 print(f"[DEBUG] Pressing Key.space")
                 keyboard.press(Key.space)
             elif key == 'NumpadEnter':
-                print(f"[DEBUG] NumpadEnter avec flag étendu")
-                # Flag KEYEVENTF_EXTENDEDKEY = 0x0001
-                ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001, 0)  # Press avec flag étendu
-                ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001 | 0x0002, 0)  # Release
+                if platform.system() == "Windows":
+                    print(f"[DEBUG] NumpadEnter avec flag étendu")
+                    # Flag KEYEVENTF_EXTENDEDKEY = 0x0001
+                    ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001, 0) 
+                    ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001 | 0x0002, 0) 
+                else:
+                    print(f"[DEBUG] NumpadEnter on Linux")
+                    keyboard.press(Key.enter)
+                    keyboard.release(Key.enter)
             elif key == 'Enter':
                 print(f"[DEBUG] Pressing Key.enter (Enter)")
                 keyboard.press(Key.enter)

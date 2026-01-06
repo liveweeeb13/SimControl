@@ -116,3 +116,9 @@ body {
         font-size: 18px;
     }
 }
+.button-label svg {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    fill: currentColor;
+}

@@ -95,7 +95,14 @@ function openButtonEditor(buttonId) {
         <form id="buttonForm">
             <input type="hidden" id="buttonId" value="${buttonId}">
             <label>Titre: <input type="text" id="buttonTitle" value="${btn.title}"></label>
-            <label>Label: <input type="text" id="buttonLabel" value="${btn.label}"></label>
+            <label>Label: <textarea id="buttonLabel" rows="3" style="width: 100%; resize: vertical;">${btn.label}</textarea></label>
+            <p style="font-size: 11px; color: #888; margin: 5px 0;">Emoji and SVG in "&lt;svg&gt;&lt;/svg&gt;" are supported</p>
+            <div class="svg-buttons" style="margin: 10px 0;">
+                <button type="button" onclick="insertSVG('battery')" class="svg-btn">🔋 Battery</button>
+                <button type="button" onclick="insertSVG('power')" class="svg-btn">⚡ Power</button>
+                <button type="button" onclick="insertSVG('light')" class="svg-btn">💡 Light</button>
+                <button type="button" onclick="insertSVG('train')" class="svg-btn">🚂 Train</button>
+            </div>
             <label>Key: 
                 <select id="buttonKey">
                     <option value="">-- Select Key --</option>
@@ -439,6 +446,20 @@ function markTutorialSeen() {
 
 function showHelpModal() {
     document.getElementById('helpModal').style.display = 'block';
+}
+
+function insertSVG(type) {
+    const labelInput = document.getElementById('buttonLabel');
+    const svgCodes = {
+        battery: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="21" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect x="5" y="9" width="4" height="6" fill="currentColor"/></svg>',
+        power: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+        light: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"/></svg>',
+        train: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="8" width="16" height="8" rx="2" fill="currentColor"/><circle cx="8" cy="18" r="2" fill="currentColor"/><circle cx="16" cy="18" r="2" fill="currentColor"/><rect x="6" y="6" width="4" height="2" fill="currentColor"/></svg>'
+    };
+    
+    if (svgCodes[type]) {
+        labelInput.value = svgCodes[type];
+    }
 }
 
 let currentTargetElement = null;

@@ -71,6 +71,16 @@ const rules = {
 
 ## 🛠️ Development
 
+## 📋 Platform Compatibility
+
+| Operating System | Version | Support Status | Keyboard Control | Minimum version required  |
+|------------------|---------|----------------|------------------|-------|
+| Windows | 10/11 | ✅ Fully Supported | ✅ Full Support | beta-2026.01.03-1 |
+| Debian | 11+ | ✅ Fully Supported | ✅ Full Support |  beta-2026.01.06-1 |
+| Other  ⚠️ Not tested |
+
+
+
 
 ## 🤝 Contribution
 
