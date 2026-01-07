@@ -5,6 +5,7 @@ import json
 import requests
 import os
 import platform
+import sys
 
 # Import keyboard library based on OS
 if platform.system() == "Windows":
@@ -62,18 +63,29 @@ def check_version():
 
 current_ver, latest_ver, needs_update = check_version()
 
+def get_config_path():
+    # Dossier où se trouve l'exécutable
+    if getattr(sys, 'frozen', False):
+        # Si c'est un exécutable PyInstaller
+        app_dir = os.path.dirname(sys.executable)
+    else:
+        # Si c'est en développement
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    return os.path.join(app_dir, 'config.js')
+
 def create_default_config():
-    if not os.path.exists('static/config.js'):
+    config_path = get_config_path()
+    if not os.path.exists(config_path):
         default_config = '''const buttons = [];
 
 const rules = {
     autodisable: [],
     stopmac: []
 };'''
-        os.makedirs('static', exist_ok=True)
-        with open('static/config.js', 'w', encoding='utf-8') as f:
+        with open(config_path, 'w', encoding='utf-8') as f:
             f.write(default_config)
-        print("✅ Default config.js created")
+        print(f"✅ Default config.js created at {config_path}")
 
 create_default_config()
 
@@ -89,6 +101,16 @@ def keytest():
 def index():
     return render_template('index.html')
 
+@app.route('/config.js')
+def serve_config():
+    config_path = get_config_path()
+    if os.path.exists(config_path):
+        with open(config_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content, 200, {'Content-Type': 'application/javascript'}
+    else:
+        return 'const buttons = []; const rules = {autodisable: [], stopmac: []};', 200, {'Content-Type': 'application/javascript'}
+
 @app.route('/save-config', methods=['POST'])
 def save_config():
     config_data = request.json
@@ -97,7 +119,8 @@ def save_config():
 
 const rules = {json.dumps(config_data['rules'], indent=4)};"""
     
-    with open('static/config.js', 'w', encoding='utf-8') as f:
+    config_path = get_config_path()
+    with open(config_path, 'w', encoding='utf-8') as f:
         f.write(config_js)
     
     return jsonify({'success': True})
