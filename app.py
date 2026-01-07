@@ -44,7 +44,7 @@ def check_version():
                 current_version = f.read().strip()
         else:
             # Fallback to embedded version (executable mode)
-            current_version = "beta-2026.01.04-2"
+            current_version = "beta-2026.01.07-1"
         
         response = requests.get('https://raw.githubusercontent.com/liveweeeb13/SimControl/refs/heads/main/version.txt')
         latest_version = response.text.strip()
@@ -58,7 +58,7 @@ def check_version():
             print(f"✅ Updated version: {current_version}")
             return current_version, latest_version, False
     except:
-        return "beta-2026.01.04-2", "unknown", False
+        return "beta-2026.01.07-1", "unknown", False
 
 current_ver, latest_ver, needs_update = check_version()
 
