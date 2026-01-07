@@ -2,7 +2,7 @@
 
 SimControl is a web controller that transforms your device into a button interface for simulators. You can configure 35 buttons with colors, labels, and interaction rules, then control your games from your mobile/tablet via a browser.
 
-[![Version](https://img.shields.io/badge/version-beta--2026.01.04--2-blue)](https://github.com/liveweeeb/SimControl)
+[![Version](https://img.shields.io/badge/version-beta--2026.01.07--1-blue)](https://github.com/liveweeeb/SimControl)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
 
 
@@ -14,10 +14,9 @@ SimControl is a web controller that transforms your device into a button interfa
 ## 📦 Installation
 Python and windows required
 
-1. Go to [SimControl Releases](https://github.com/liveweeeb13/SimControl/releases/tag/ALL-1)
+1. Go to [SimControl Releases](https://github.com/liveweeeb13/SimControl/releases)
 2. Download the latest release
-3. Run `UPDATE.exe` to install SimControl
-4. Launch the application (with the ``start.bat``)
+3. Run `SimControl.exe` to install SimControl
 
 [Any problem, come talk to us ](https://github.com/liveweeeb13/SimControl?tab=readme-ov-file#-support)
 
@@ -77,7 +76,7 @@ const rules = {
 | Operating System | Version | Support Status | Keyboard Control | Minimum version required  |
 |------------------|---------|----------------|------------------|-------|
 | Windows | 10/11 | ✅ Fully Supported | ✅ Full Support | beta-2026.01.03-1 |
-| Debian | 11+ | ✅ Fully Supported | ✅ Full Support |  beta-2026.01.06-1 |
+| Debian | 11+ | ✅ Fully Supported | ✅ Full Support |  beta-2026.01.07-1 |
 | Other  ⚠️ Not tested |
 
 

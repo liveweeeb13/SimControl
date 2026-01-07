@@ -22,7 +22,12 @@ else:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'jugfhuigfyhghfyghfygfgfgff4gf545g5g5h7548ù74ù'
-socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Fix for PyInstaller compatibility
+try:
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+except:
+    socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
 
 # Initialize keyboard controller if available
 if Controller:
@@ -33,23 +38,27 @@ pressed_keys = set()
 
 def check_version():
     try:
-        with open('version.txt', 'r') as f:
-            current_version = f.read().strip()
+        # Try to read from file first (development mode)
+        if os.path.exists('version.txt'):
+            with open('version.txt', 'r') as f:
+                current_version = f.read().strip()
+        else:
+            # Fallback to embedded version (executable mode)
+            current_version = "beta-2026.01.04-2"
         
         response = requests.get('https://raw.githubusercontent.com/liveweeeb13/SimControl/refs/heads/main/version.txt')
         latest_version = response.text.strip()
         
         if current_version != latest_version:
-            print(f"⚠️  MISE À JOUR DISPONIBLE !")
-            print(f"Version installée: {current_version}")
-            print(f"Dernière version: {latest_version}")
-            print(f"Lancez UPDATE.exe pour mettre à jour")
+            print(f"⚠️ UPDATE AVAILABLE!")
+            print(f"Current version: {current_version}")
+            print(f"Latest version: {latest_version}")
             return current_version, latest_version, True
         else:
-            print(f"✅ Version à jour: {current_version}")
+            print(f"✅ Updated version: {current_version}")
             return current_version, latest_version, False
     except:
-        return "unknown", "unknown", False
+        return "beta-2026.01.04-2", "unknown", False
 
 current_ver, latest_ver, needs_update = check_version()
 
@@ -181,4 +190,8 @@ def handle_keyup(data):
             print(f"❌ Erreur keyup: {e}")
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=3001, debug=True)
+    try:
+        socketio.run(app, host='0.0.0.0', port=3001, debug=False)
+    except Exception as e:
+        print(f"Error starting server: {e}")
+        input("Press Enter to exit...")

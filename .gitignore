@@ -1,1 +1,5 @@
 static/config.js
+dist/**
+build/**
+build.py
+SimControl.spec
