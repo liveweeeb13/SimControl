@@ -3,19 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Tester - SimControl</title>
+    <title>Key Inspector - SimControl</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Courier New', monospace;
-            background: #1a1a2e;
-            color: #00ff41;
-            padding: 20px;
+            font-family: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px),
+                linear-gradient(160deg, #1a1d21 0%, #101215 100%);
+            color: #e8e6e1;
+            min-height: 100vh;
+            padding: 40px 20px;
             text-align: center;
         }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #f4c542;
+            text-shadow: 0 0 12px rgba(255, 176, 0, 0.35);
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            margin: 20px 0;
+            font-size: 13px;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #9aa0a6;
+        }
+
         .key-display {
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #00ff41;
-            border-radius: 10px;
+            background: linear-gradient(180deg, #22262b 0%, #191c1f 100%);
+            border: 1px solid #3a3f45;
+            border-top: 2px solid #ffb000;
+            border-radius: 6px;
             padding: 30px;
             margin: 20px auto;
             max-width: 600px;
@@ -23,55 +55,85 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            position: relative;
         }
+
+        .key-display::before,
+        .key-display::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #6b7076, #2a2d31 70%);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.6);
+            top: 10px;
+        }
+        .key-display::before { left: 10px; }
+        .key-display::after { right: 10px; }
+
         .key-name {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 600;
             margin: 10px 0;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #e8e6e1;
         }
+
         .key-code {
-            font-size: 18px;
-            color: #ffff00;
+            font-size: 15px;
+            color: #ffb000;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.5px;
         }
-        .instructions {
-            margin: 20px 0;
-            font-size: 16px;
-        }
+
         .back-btn {
-            background: #00ff41;
-            color: #1a1a2e;
+            background: linear-gradient(180deg, #4a9eff, #2b6fd1);
+            color: #0c1116;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            border-top: 1px solid rgba(255,255,255,0.35);
+            padding: 12px 22px;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 13px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             margin: 20px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(74, 158, 255, 0.35);
         }
     </style>
 </head>
 <body>
-    <h1>🔍 Key Tester</h1>
+    <h1>Key Inspector</h1>
     <div class="instructions">
         Press any key to see its name and code
     </div>
-    
+
     <div class="key-display">
         <div class="key-name" id="keyName">Press a key...</div>
         <div class="key-code" id="keyCode">Code will appear here</div>
     </div>
-    
+
     <button class="back-btn" onclick="window.location.href='/'">← Back to Menu</button>
-    
+
     <script>
         document.addEventListener('keydown', function(event) {
             event.preventDefault();
-            
+
             const keyName = document.getElementById('keyName');
             const keyCode = document.getElementById('keyCode');
-            
+
             keyName.textContent = `Key: "${event.key}"`;
-            keyCode.textContent = `Code: "${event.code}" | Which: ${event.which} | KeyCode: ${event.keyCode}`;
-            
+            keyCode.textContent = `Code: "${event.code}" | KeyCode: ${event.keyCode}`;
+
             console.log('Key pressed:', {
                 key: event.key,
                 code: event.code,
@@ -80,7 +142,7 @@
                 location: event.location
             });
         });
-        
+
         document.addEventListener('keyup', function(event) {
             console.log('Key released:', event.key);
         });

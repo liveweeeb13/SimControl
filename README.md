@@ -1,104 +1,114 @@
-# SimControl 2026 🚀
+# SimControl 2026
 
-SimControl is a web controller that transforms your device into a button interface for simulators. You can configure 35 buttons with colors, labels, and interaction rules, then control your games from your mobile/tablet via a browser.
+**SimControl** is a custom web Stream Deck turn your phone or tablet into a control panel for simulators. 35 configurable buttons, automatic rules, themes, and full keyboard control.
 
-[![Version](https://img.shields.io/badge/version-beta--2026.01.07--1-blue)](https://github.com/liveweeeb/SimControl)
+[![Version](https://img.shields.io/badge/version-beta--2026.08.17--1-blue)](https://github.com/liveweeeb13/SimControl/releases)
 [![Python](https://img.shields.io/badge/python-3.8+-green)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
+---
 
+## Overview
 
-**Access**: http://IP:3001
+| Controller (PC) | Controller (Mobile) |
+|---|---|
+| ![](docs/screen3.png) | ![](docs/screen4.png) |
 
-> 💡 **Recommended**: Use on mobile/tablet in landscape mode
+| Menu | Key Inspector |
+|---|---|
+| ![](docs/screen1.png) | ![](docs/screen2.png) |
 
-## 📦 Installation
-Python and windows required
+---
 
-1. Go to [SimControl Releases](https://github.com/liveweeeb13/SimControl/releases)
-2. Download the latest release
-3. Run `SimControl.exe` to install SimControl
+## Installation
 
-[Any problem, come talk to us ](https://github.com/liveweeeb13/SimControl?tab=readme-ov-file#-support)
+**Requirements** : Windows 10/11 or Debian 11+, Python 3.8+
 
-## 🎮 Usage
+```bash
+git clone https://github.com/liveweeeb13/SimControl
+cd SimControl
+pip install -r requirements.txt
+python app.py
+```
 
-### 1. Initial Setup
-- Click on "🎛️ Edit Buttons"
-- Configure your buttons (35 slots available)
-- Define rules if necessary
+Or download the `.exe` from [Releases](https://github.com/liveweeeb13/SimControl/releases) and run it directly.
 
-### 2. Launch
-- Click on "Start SimControl"
-- Your controller is ready!
+The interface is accessible at **http://[IP]:3001** from any device on the same network.
 
-## ⚙️ Advanced Configuration (public/config.js)
+---
 
-### Button Structure 
+## Usage
+
+1. Open **http://[IP]:3001** on PC
+2. Click **Edit Buttons** to configure your 35 buttons
+3. Click **Start SimControl**
+4. Open **http://[IP]:3001/simcontrol** on your phone/tablet (landscape mode recommended)
+
+---
+
+## Configuration
+
+Buttons and rules are stored in `config.js`.
+
+### Button structure
+
 ```js
 {
-    id: 1,                    // Position (1-35)
-    title: "Battery",         // Descriptive name
-    label: "🔋",              // Emoji/text displayed
-    key: "w",                 // Keyboard key
-    toggleable: true,         // Toggle or push button
-    color1: "#ff0000",        // OFF color
-    color2: "#00ff00",        // ON color
-    holdTime: 2500            // Hold time (ms)
+    id: 1,              // Position (1–35)
+    title: "Battery",   // Name shown in the editor
+    label: "BATT",      // Text, emoji or image on the button
+    key: "b",           // Keyboard key sent
+    toggleable: true,   // true = toggle ON/OFF, false = push
+    color1: "#333333",  // Color when OFF
+    color2: "#00ff00",  // Color when ON
+    holdTime: 0         // Hold duration before trigger (ms)
 }
 ```
 
-### Automatic Rules
+### Automatic rules
+
 ```js
 const rules = {
-    // Automatic disable
+    // Automatically disables buttons when another changes state
     autodisable: [
-        {
-            trigger: 1,           // Trigger button
-            targets: [2, 3],      // Buttons to disable
-            condition: "off"      // Condition (on/off)
-        }
+        { trigger: 1, targets: [2, 3], condition: "off" }
     ],
-    // Conditional blocking
-    stopmac: [
-        {
-            trigger: 1,           // Trigger button
-            targets: [4, 5],      // Buttons to block
-            condition: "off"      // When to block
-        }
+    // Blocks buttons based on another button's state
+    lock: [
+        { trigger: 1, targets: [4, 5], condition: "off" }
     ]
 };
 ```
 
-## 🛠️ Development
+---
 
-## 📋 Platform Compatibility
+## Compatibility
 
-| Operating System | Version | Support Status | Keyboard Control | Minimum version required  |
-|------------------|---------|----------------|------------------|-------|
-| Windows | 10/11 | ✅ Fully Supported | ✅ Full Support | beta-2026.01.03-1 |
-| Debian | 11+ | ✅ Fully Supported | ✅ Full Support |  beta-2026.01.07-1 |
-| Other  ⚠️ Not tested |
-
-
-
-
-## 🤝 Contribution
-
-**Helper**: Mr_Ewann 🚂🚃
-
-## 📞 Support
-
-- 🐈 **GitHub**: https://github.com/liveweeeb
-- 💬 **Discord**: https://discord.gg/ukJegYrXWR
-- 📧 **Contact**: https://id.rappytv.com/790240841598763018
+| OS | Version | Status | Keyboard control |
+|---|---|---|---|
+| Windows | 10 / 11 | Supported | Full |
+| Others | ? | Untested | ? |
 
 ---
 
-![f](https://media.discordapp.net/attachments/1452248393064775732/1457375436463013999/image.png?ex=695bc624&is=695a74a4&hm=c7f740a22c1b91b351fdc8eed6112aac03b748bcd56a91503699bf7d8028f52f&=&format=webp&quality=lossless&width=1142&height=544)
+## Tech stack
+
+- **Backend** : Flask + Flask-SocketIO (Python)
+- **Frontend** : HTML / CSS / JS 
+- **GUI** : tkinter
+- **Keyboard** : pynput 
+- **Build** : PyInstaller
 
 ---
+
+## Support
+
+- GitHub : [github.com/liveweeeb13](https://github.com/liveweeeb13)
+- Discord : [discord.gg/ukJegYrXWR](https://discord.gg/ukJegYrXWR)
+- Contact : [discord (liveweeeb)](https://id.rappytv.com/790240841598763018)
+
+---
+
 
 **Created with ❤️ by liveweeeb | SimControl 2026**
-
-
 

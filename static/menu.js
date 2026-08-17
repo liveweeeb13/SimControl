@@ -1,7 +1,28 @@
-let currentConfig = {
-    buttons: [...buttons],
-    rules: JSON.parse(JSON.stringify(rules))
-};
+function toggleTheme() {
+    const current = currentConfig.theme || '1';
+    const next = current === '1' ? '2' : '1';
+    currentConfig.theme = next;
+    document.getElementById('themeBtn').textContent = `🎨 Controller Theme: ${next}`;
+}
+
+function initThemeBtn() {
+    const btn = document.getElementById('themeBtn');
+    if (!btn) return;
+    const current = currentConfig.theme || '1';
+    btn.textContent = `🎨 Controller Theme: ${current}`;
+}
+
+document.addEventListener('DOMContentLoaded', initThemeBtn);
+
+let currentConfig = { buttons: [], rules: { autodisable: [], lock: [] }, theme: '1' };
+
+fetch('/config.json').then(r => r.json()).then(data => {
+    currentConfig = data;
+    if (!currentConfig.rules) currentConfig.rules = {};
+    if (!currentConfig.rules.autodisable) currentConfig.rules.autodisable = [];
+    if (!currentConfig.rules.lock) currentConfig.rules.lock = [];
+    initThemeBtn();
+}).catch(() => initThemeBtn());
 
 function exportConfig() {
     const dataStr = JSON.stringify(currentConfig, null, 2);
@@ -40,7 +61,7 @@ function editButtons() {
         const btn = currentConfig.buttons.find(b => b.id === i);
         const configured = btn && btn.key !== '';
         gridHTML += `<div class="grid-button ${configured ? 'configured' : ''}" onclick="openButtonEditor(${i})">
-            ${configured ? btn.label || i : i}
+            ${configured ? (btn.label && btn.label.startsWith('<img') ? `<img src="${btn.label.match(/src="([^"]+)"/)?.[1]}" style="width:100%;height:100%;object-fit:cover;">` : btn.label || i) : i}
         </div>`;
     }
     gridHTML += '</div>';
@@ -96,12 +117,21 @@ function openButtonEditor(buttonId) {
             <input type="hidden" id="buttonId" value="${buttonId}">
             <label>Titre: <input type="text" id="buttonTitle" value="${btn.title}"></label>
             <label>Label: <textarea id="buttonLabel" rows="3" style="width: 100%; resize: vertical;">${btn.label}</textarea></label>
-            <p style="font-size: 11px; color: #888; margin: 5px 0;">Emoji and SVG in "&lt;svg&gt;&lt;/svg&gt;" are supported</p>
-            <div class="svg-buttons" style="margin: 10px 0;">
-                <button type="button" onclick="insertSVG('battery')" class="svg-btn">🔋 Battery</button>
-                <button type="button" onclick="insertSVG('power')" class="svg-btn">⚡ Power</button>
-                <button type="button" onclick="insertSVG('light')" class="svg-btn">💡 Light</button>
-                <button type="button" onclick="insertSVG('train')" class="svg-btn">🚂 Train</button>
+            <p style="font-size: 11px; color: #888; margin: 5px 0;">Emoji, SVG in "&lt;svg&gt;&lt;/svg&gt;" or image are supported</p>
+            <div style="margin: 8px 0;">
+                <input type="file" id="buttonImageInput" accept="image/*" style="display:none;" onchange="insertImage(event)">
+                <button type="button" onclick="document.getElementById('buttonImageInput').click()" class="svg-btn">Import Image</button>
+            </div>
+            <div id="imagePreviewContainer" style="display:none; margin: 10px 0;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                    <span style="font-size:10px; color:#9aa0a6; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:1px;">Zoom</span>
+                    <button type="button" onclick="adjustZoom(-10)" class="svg-btn" style="padding:2px 8px;">-</button>
+                    <span id="zoomValue" style="font-size:11px; color:#ffb000; font-family:'IBM Plex Mono',monospace; min-width:35px; text-align:center;">100%</span>
+                    <button type="button" onclick="adjustZoom(10)" class="svg-btn" style="padding:2px 8px;">+</button>
+                </div>
+                <div style="width:80px; height:80px; border-radius:50%; overflow:hidden; border:2px solid #ffb000; margin:0 auto; background:#0c0d0f;">
+                    <img id="imagePreview" style="width:100%; height:100%; object-fit:cover; transform-origin:center; transition:transform 0.1s;">
+                </div>
             </div>
             <label>Key: 
                 <select id="buttonKey">
@@ -200,8 +230,12 @@ function openButtonEditor(buttonId) {
                 </select>
             </label>
             <label>Toggleable: <input type="checkbox" id="buttonToggleable" ${btn.toggleable ? 'checked' : ''}></label>
-            <label>Color OFF: <input type="color" id="buttonColor1" value="${color1}"></label>
-            <label>Color ON: <input type="color" id="buttonColor2" value="${color2}"></label>
+            <label>Color OFF / ON:
+                <div class="color-row">
+                    <input type="color" id="buttonColor1" value="${color1}">
+                    <input type="color" id="buttonColor2" value="${color2}">
+                </div>
+            </label>
             <label>Hold Time (ms): <input type="number" id="buttonHoldTime" min="0" value="${btn.holdTime || 0}"></label>
             <div class="modal-buttons">
                 <button type="button" onclick="saveButton()">Save</button>
@@ -217,6 +251,7 @@ function openButtonEditor(buttonId) {
 }
 
 function saveButton() {
+    if (currentImageSrc) updateImageLabel();
     const id = parseInt(document.getElementById('buttonId').value);
     const title = document.getElementById('buttonTitle').value;
     const label = document.getElementById('buttonLabel').value;
@@ -257,6 +292,22 @@ function editRules() {
 }
 
 function displayRules() {
+    if (!currentConfig.rules.autodisable) currentConfig.rules.autodisable = [];
+    if (!currentConfig.rules.lock) currentConfig.rules.lock = [];
+
+    const modal = document.getElementById('rulesModal');
+    if (!document.getElementById('rulesContent')) {
+        modal.querySelector('.modal-content').innerHTML = `
+            <span class="close" onclick="closeModal('rulesModal')">&times;</span>
+            <h3>Edit Rules</h3>
+            <div id="rulesContent"></div>
+            <div class="modal-buttons">
+                <button onclick="addRule('autodisable')" class="menu-btn">+ Add Autodisable</button>
+                <button onclick="addRule('stopmac')" class="menu-btn">+ Add Lock</button>
+            </div>
+        `;
+    }
+
     const content = document.getElementById('rulesContent');
     let html = '<h4>Règles Autodisable</h4>';
     
@@ -272,14 +323,14 @@ function displayRules() {
         `;
     });
     
-    html += '<h4>Règles Stopmac</h4>';
-    currentConfig.rules.stopmac.forEach((rule, index) => {
+    html += '<h4>Règles Lock</h4>';
+    currentConfig.rules.lock.forEach((rule, index) => {
         html += `
             <div class="rule-item">
                 <p>Trigger: ${rule.trigger} | Targets: [${rule.targets.join(', ')}] | Condition: ${rule.condition}</p>
                 <div class="rule-controls">
-                    <button onclick="editRule('stopmac', ${index})">Modifier</button>
-                    <button class="delete-btn" onclick="deleteRule('stopmac', ${index})">Supprimer</button>
+                    <button onclick="editRule('lock', ${index})">Modifier</button>
+                    <button class="delete-btn" onclick="deleteRule('lock', ${index})">Supprimer</button>
                 </div>
             </div>
         `;
@@ -289,20 +340,142 @@ function displayRules() {
 }
 
 function addRule(type) {
-    const trigger = prompt('Trigger button ID:');
-    const targets = prompt('Target button IDs (separated by commas):');
-    const condition = prompt('Condition (on/off):');
-    
-    if (trigger && targets && condition) {
-        const rule = {
-            trigger: parseInt(trigger),
-            targets: targets.split(',').map(t => parseInt(t.trim())),
-            condition: condition
-        };
-        
-        currentConfig.rules[type].push(rule);
-        displayRules();
+    const modal = document.getElementById('rulesModal');
+    const content = modal.querySelector('.modal-content');
+
+    let gridHTML = (label, idPrefix) => {
+        let html = `<div class="button-grid" id="${idPrefix}Grid">`;
+        for (let i = 1; i <= 35; i++) {
+            const btn = currentConfig.buttons.find(b => b.id === i);
+            const configured = btn && btn.key !== '';
+            const label2 = configured ? (btn.label && btn.label.startsWith('<img') ? `<img src="${btn.label.match(/src="([^"]+)"/)?.[1]}" style="width:100%;height:100%;object-fit:cover;">` : btn.label || i) : i;
+            html += `<div class="grid-button ${configured ? 'configured' : ''}" id="${idPrefix}-${i}" onclick="toggleRuleBtn('${idPrefix}', ${i})">${label2}</div>`;
+        }
+        html += '</div>';
+        return html;
+    };
+
+    content.innerHTML = `
+        <span class="close" onclick="displayRules()">&times;</span>
+        <h3>Add ${type === 'autodisable' ? 'Autodisable' : 'Lock'} Rule</h3>
+
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Trigger (1 button)</p>
+        ${gridHTML('Trigger', 'trigger')}
+
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Targets (multiple)</p>
+        ${gridHTML('Targets', 'targets')}
+
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Condition</p>
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <button type="button" id="cond-on" class="svg-btn" onclick="selectCondition('on')" style="flex:1;">ON</button>
+            <button type="button" id="cond-off" class="svg-btn" onclick="selectCondition('off')" style="flex:1;">OFF</button>
+        </div>
+
+        <div class="modal-buttons">
+            <button type="button" onclick="saveRule('${type}')">Save</button>
+            <button type="button" onclick="displayRules()">Back</button>
+        </div>
+    `;
+
+    window._ruleCondition = 'off';
+    document.getElementById('cond-off').style.borderColor = '#ffb000';
+    document.getElementById('cond-off').style.color = '#ffb000';
+}
+
+function toggleRuleBtn(prefix, id) {
+    const el = document.getElementById(`${prefix}-${id}`);
+    if (prefix === 'trigger') {
+        document.querySelectorAll('[id^="trigger-"]').forEach(b => b.classList.remove('rule-selected'));
+        el.classList.add('rule-selected');
+    } else {
+        el.classList.toggle('rule-selected');
     }
+}
+
+function selectCondition(val) {
+    window._ruleCondition = val;
+    ['on', 'off'].forEach(v => {
+        const btn = document.getElementById(`cond-${v}`);
+        btn.style.borderColor = v === val ? '#ffb000' : '';
+        btn.style.color = v === val ? '#ffb000' : '';
+    });
+}
+
+function saveRule(type) {
+    const triggerEl = document.querySelector('[id^="trigger-"].rule-selected');
+    const targetEls = document.querySelectorAll('[id^="targets-"].rule-selected');
+
+    if (!triggerEl) return alert('Select a trigger button.');
+    if (!targetEls.length) return alert('Select at least one target.');
+
+    const trigger = parseInt(triggerEl.id.split('-')[1]);
+    const targets = Array.from(targetEls).map(el => parseInt(el.id.split('-')[1]));
+    const key = type === 'stopmac' ? 'lock' : type;
+
+    if (!currentConfig.rules[key]) currentConfig.rules[key] = [];
+    currentConfig.rules[key].push({ trigger, targets, condition: window._ruleCondition });
+    displayRules();
+}
+
+function editRule(type, index) {
+    const key = type === 'stopmac' ? 'lock' : type;
+    const rule = currentConfig.rules[key][index];
+    const modal = document.getElementById('rulesModal');
+    const content = modal.querySelector('.modal-content');
+
+    let gridHTML = (idPrefix) => {
+        let html = `<div class="button-grid" id="${idPrefix}Grid">`;
+        for (let i = 1; i <= 35; i++) {
+            const btn = currentConfig.buttons.find(b => b.id === i);
+            const configured = btn && btn.key !== '';
+            const label = configured ? (btn.label && btn.label.startsWith('<img') ? `<img src="${btn.label.match(/src="([^"]+)"/)?.[1]}" style="width:100%;height:100%;object-fit:cover;">` : btn.label || i) : i;
+            html += `<div class="grid-button ${configured ? 'configured' : ''}" id="${idPrefix}-${i}" onclick="toggleRuleBtn('${idPrefix}', ${i})">${label}</div>`;
+        }
+        html += '</div>';
+        return html;
+    };
+
+    content.innerHTML = `
+        <span class="close" onclick="displayRules()">&times;</span>
+        <h3>Edit ${type === 'autodisable' ? 'Autodisable' : 'Lock'} Rule</h3>
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Trigger (1 button)</p>
+        ${gridHTML('trigger')}
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Targets (multiple)</p>
+        ${gridHTML('targets')}
+        <p style="font-size:11px;color:#9aa0a6;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px;">Condition</p>
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <button type="button" id="cond-on" class="svg-btn" onclick="selectCondition('on')" style="flex:1;">ON</button>
+            <button type="button" id="cond-off" class="svg-btn" onclick="selectCondition('off')" style="flex:1;">OFF</button>
+        </div>
+        <div class="modal-buttons">
+            <button type="button" onclick="saveEditRule('${type}', ${index})">Save</button>
+            <button type="button" onclick="displayRules()">Back</button>
+        </div>
+    `;
+
+    // Pre-select existing values
+    window._ruleCondition = rule.condition;
+    document.getElementById(`trigger-${rule.trigger}`).classList.add('rule-selected');
+    rule.targets.forEach(t => document.getElementById(`targets-${t}`).classList.add('rule-selected'));
+    const condBtn = document.getElementById(`cond-${rule.condition}`);
+    condBtn.style.borderColor = '#ffb000';
+    condBtn.style.color = '#ffb000';
+}
+
+function saveEditRule(type, index) {
+    const triggerEl = document.querySelector('[id^="trigger-"].rule-selected');
+    const targetEls = document.querySelectorAll('[id^="targets-"].rule-selected');
+
+    if (!triggerEl) return alert('Select a trigger button.');
+    if (!targetEls.length) return alert('Select at least one target.');
+
+    const key = type === 'stopmac' ? 'lock' : type;
+    currentConfig.rules[key][index] = {
+        trigger: parseInt(triggerEl.id.split('-')[1]),
+        targets: Array.from(targetEls).map(el => parseInt(el.id.split('-')[1])),
+        condition: window._ruleCondition
+    };
+    displayRules();
 }
 
 function deleteRule(type, index) {
@@ -335,257 +508,127 @@ function clearConfig() {
     if (confirm('Are you sure you want to clear all configuration? This will remove all buttons and rules.')) {
         currentConfig = {
             buttons: [],
-            rules: { autodisable: [], stopmac: [] }
+            rules: { autodisable: [], lock: [] }
         };
         alert('Configuration cleared!');
     }
 }
 
 let tutorialActive = false;
+let tutorialStep = 0;
 
-const originalEditButtons = editButtons;
+const TUTORIAL_STEPS = [
+    {
+        title: "Welcome to SimControl",
+        desc: "This tutorial will guide you through the basics. You can skip at any time."
+    },
+    {
+        title: "Configure your buttons",
+        desc: "Click \"Edit Buttons\" to open the button editor. You have 35 slots available to configure."
+    },
+    {
+        title: "Set up a button",
+        desc: "Select a slot, fill in a title, a label (emoji or text), and choose a keyboard key to send."
+    },
+    {
+        title: "Automate with rules",
+        desc: "Use \"Edit Rules\" to create Autodisable or Lock rules that automate button behavior based on states."
+    },
+    {
+        title: "Launch!",
+        desc: "Click \"Start SimControl\" to save your config and open the controller. Access it from any device on your network."
+    }
+];
 
 function showTutorial() {
-    tutorialStep = 1;
+    tutorialStep = 0;
     tutorialActive = true;
-    showTutorialStep();
+    renderTutorialStep();
+    document.getElementById('tutorialOverlay').style.display = 'flex';
 }
 
-function showTutorialStep() {
-    const overlay = document.getElementById('tutorialOverlay');
-    const tooltip = document.getElementById('tutorialTooltip');
-    
-    if (tutorialStep === 1) {
-        const editBtn = document.querySelector('button[onclick="editButtons()"]');
-        positionTooltip(tooltip, editBtn);
-        tooltip.innerHTML = `
-            <div class="tutorial-step-content">
-                <h4>Create your first button!</h4>
-                <p>Click on "🎛️ Edit Buttons" to start</p>
-                <div class="tutorial-arrow"></div>
-            </div>
-        `;
-        overlay.style.display = 'block';
+function renderTutorialStep() {
+    const step = TUTORIAL_STEPS[tutorialStep];
+    const total = TUTORIAL_STEPS.length;
+
+    document.getElementById('tutorialStepLabel').textContent = `Step ${tutorialStep + 1} / ${total}`;
+    document.getElementById('tutorialTitle').textContent = step.title;
+    document.getElementById('tutorialDesc').textContent = step.desc;
+    document.getElementById('tutorialNextBtn').textContent = tutorialStep === total - 1 ? 'Finish' : 'Next';
+    document.getElementById('tutorialPrevBtn').style.display = tutorialStep === 0 ? 'none' : 'inline-block';
+
+    const progress = document.getElementById('tutorialProgress');
+    progress.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'tutorial-dot' + (i <= tutorialStep ? ' active' : '');
+        progress.appendChild(dot);
     }
 }
 
-function positionTooltip(tooltip, target) {
-    currentTargetElement = target;
-    const rect = target.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const arrow = tooltip.querySelector('.tutorial-arrow');
-    
-    arrow.style.top = '';
-    arrow.style.bottom = '';
-    arrow.style.left = '';
-    arrow.style.right = '';
-    arrow.style.borderTop = '';
-    arrow.style.borderBottom = '';
-    arrow.style.borderLeft = '';
-    arrow.style.borderRight = '';
-    
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    const spaceRight = window.innerWidth - rect.right;
-    const spaceLeft = rect.left;
-    
-    if (spaceBelow >= 150) {
-        tooltip.style.top = (rect.bottom + 10) + 'px';
-        tooltip.style.left = Math.max(10, rect.left + (rect.width / 2) - 150) + 'px';
-        arrow.style.top = '-8px';
-        arrow.style.left = Math.min(280, Math.max(20, rect.left + (rect.width / 2) - Math.max(10, rect.left + (rect.width / 2) - 150))) + 'px';
-        arrow.style.borderBottom = '8px solid #ffeb3b';
-        arrow.style.borderLeft = '8px solid transparent';
-        arrow.style.borderRight = '8px solid transparent';
-    } else if (spaceAbove >= 150) {
-        tooltip.style.top = (rect.top - 150) + 'px';
-        tooltip.style.left = Math.max(10, rect.left + (rect.width / 2) - 150) + 'px';
-        arrow.style.bottom = '-8px';
-        arrow.style.left = Math.min(280, Math.max(20, rect.left + (rect.width / 2) - Math.max(10, rect.left + (rect.width / 2) - 150))) + 'px';
-        arrow.style.borderTop = '8px solid #ffeb3b';
-        arrow.style.borderLeft = '8px solid transparent';
-        arrow.style.borderRight = '8px solid transparent';
-    } else if (spaceRight >= 320) {
-        tooltip.style.top = Math.max(10, rect.top - 50) + 'px';
-        tooltip.style.left = (rect.right + 10) + 'px';
-        arrow.style.left = '-8px';
-        arrow.style.top = '20px';
-        arrow.style.borderRight = '8px solid #ffeb3b';
-        arrow.style.borderTop = '8px solid transparent';
-        arrow.style.borderBottom = '8px solid transparent';
-    } else {
-        tooltip.style.top = Math.max(10, rect.top - 50) + 'px';
-        tooltip.style.left = Math.max(10, rect.left - 320) + 'px';
-        arrow.style.right = '-8px';
-        arrow.style.top = '20px';
-        arrow.style.borderLeft = '8px solid #ffeb3b';
-        arrow.style.borderTop = '8px solid transparent';
-        arrow.style.borderBottom = '8px solid transparent';
+function prevTutorialStep() {
+    if (tutorialStep > 0) {
+        tutorialStep--;
+        renderTutorialStep();
     }
 }
 
 function nextTutorialStep() {
-    tutorialStep++;
-    if (tutorialStep > 4) {
-        closeTutorial();
+    if (tutorialStep >= TUTORIAL_STEPS.length - 1) {
+        skipTutorial();
     } else {
-        showTutorialStep();
+        tutorialStep++;
+        renderTutorialStep();
     }
 }
 
-function closeTutorial() {
+function skipTutorial() {
     tutorialActive = false;
-    currentTargetElement = null;
     document.getElementById('tutorialOverlay').style.display = 'none';
+    markTutorialSeen();
 }
 
 function markTutorialSeen() {
     localStorage.setItem('tutorialSeen', 'true');
-    closeTutorial();
+}
+
+function closeTutorial() {
+    skipTutorial();
 }
 
 function showHelpModal() {
     document.getElementById('helpModal').style.display = 'block';
 }
 
-function insertSVG(type) {
-    const labelInput = document.getElementById('buttonLabel');
-    const svgCodes = {
-        battery: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="21" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect x="5" y="9" width="4" height="6" fill="currentColor"/></svg>',
-        power: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
-        light: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"/></svg>',
-        train: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="8" width="16" height="8" rx="2" fill="currentColor"/><circle cx="8" cy="18" r="2" fill="currentColor"/><circle cx="16" cy="18" r="2" fill="currentColor"/><rect x="6" y="6" width="4" height="2" fill="currentColor"/></svg>'
+let currentImageSrc = null;
+let currentZoom = 100;
+
+function insertImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentImageSrc = e.target.result;
+        currentZoom = 100;
+        document.getElementById('zoomValue').textContent = '100%';
+        document.getElementById('imagePreview').src = currentImageSrc;
+        document.getElementById('imagePreview').style.transform = 'scale(1)';
+        document.getElementById('imagePreviewContainer').style.display = 'block';
+        updateImageLabel();
     };
-    
-    if (svgCodes[type]) {
-        labelInput.value = svgCodes[type];
-    }
+    reader.readAsDataURL(file);
 }
 
-let currentTargetElement = null;
+function adjustZoom(delta) {
+    currentZoom = Math.min(200, Math.max(50, currentZoom + delta));
+    document.getElementById('zoomValue').textContent = currentZoom + '%';
+    document.getElementById('imagePreview').style.transform = `scale(${currentZoom / 100})`;
+}
 
-window.addEventListener('resize', function() {
-    if (tutorialActive && currentTargetElement) {
-        const tooltip = document.getElementById('tutorialTooltip');
-        positionTooltip(tooltip, currentTargetElement);
-    }
-});
-
-editButtons = function() {
-    originalEditButtons();
-    if (tutorialActive && tutorialStep === 1) {
-        setTimeout(() => {
-            tutorialStep = 2;
-            const tooltip = document.getElementById('tutorialTooltip');
-            const modal = document.getElementById('buttonModal');
-            const gridBtn = document.querySelector('.grid-button');
-            if (gridBtn) {
-                modal.appendChild(tooltip);
-                positionTooltip(tooltip, gridBtn);
-                tooltip.innerHTML = `
-                    <div class="tutorial-step-content">
-                        <h4>Select a position</h4>
-                        <p>Click on any number to configure that button</p>
-                        <div class="tutorial-arrow"></div>
-                    </div>
-                `;
-            }
-        }, 500);
-    }
-};
-
-const originalOpenButtonEditor = openButtonEditor;
-openButtonEditor = function(buttonId) {
-    originalOpenButtonEditor(buttonId);
-    if (tutorialActive && tutorialStep === 2) {
-        setTimeout(() => {
-            tutorialStep = 3;
-            const tooltip = document.getElementById('tutorialTooltip');
-            const modal = document.getElementById('buttonModal');
-            const titleInput = document.getElementById('buttonTitle');
-            if (titleInput) {
-                modal.appendChild(tooltip);
-                highlightElement(titleInput);
-                positionTooltip(tooltip, titleInput);
-                tooltip.innerHTML = `
-                    <div class="tutorial-step-content">
-                        <h4>Enter a title</h4>
-                        <p>Give your button a name (e.g., "Engine", "Lights")</p>
-                        <div class="tutorial-arrow"></div>
-                    </div>
-                `;
-                
-                titleInput.addEventListener('input', function() {
-                    if (titleInput.value.length > 0 && tutorialStep === 3) {
-                        setTimeout(() => {
-                            tutorialStep = 4;
-                            const labelInput = document.getElementById('buttonLabel');
-                            highlightElement(labelInput);
-                            positionTooltip(tooltip, labelInput);
-                            tooltip.innerHTML = `
-                                <div class="tutorial-step-content">
-                                    <h4>Add a label</h4>
-                                    <p>Text shown on button (emoji or text)</p>
-                                    <div class="tutorial-arrow"></div>
-                                </div>
-                            `;
-                            
-                            labelInput.addEventListener('input', function() {
-                                if (labelInput.value.length > 0 && tutorialStep === 4) {
-                                    setTimeout(() => {
-                                        tutorialStep = 5;
-                                        const keySelect = document.getElementById('buttonKey');
-                                        highlightElement(keySelect);
-                                        positionTooltip(tooltip, keySelect);
-                                        tooltip.innerHTML = `
-                                            <div class="tutorial-step-content">
-                                                <h4>Select a key</h4>
-                                                <p>Choose which keyboard key this button will send</p>
-                                                <div class="tutorial-arrow"></div>
-                                            </div>
-                                        `;
-                                        
-                                        keySelect.addEventListener('change', function() {
-                                            if (keySelect.value && tutorialStep === 5) {
-                                                setTimeout(() => {
-                                                    const saveBtn = document.querySelector('button[onclick="saveButton()"]');
-                                                    highlightElement(saveBtn);
-                                                    positionTooltip(tooltip, saveBtn);
-                                                    tooltip.innerHTML = `
-                                                        <div class="tutorial-step-content">
-                                                            <h4>Save your button!</h4>
-                                                            <p>Click Save to create your first button</p>
-                                                            <div class="tutorial-arrow"></div>
-                                                        </div>
-                                                    `;
-                                                    
-                                                    setTimeout(() => {
-                                                        markTutorialSeen();
-                                                    }, 3000);
-                                                }, 500);
-                                            }
-                                        }, {once: true});
-                                    }, 500);
-                                }
-                            }, {once: true});
-                        }, 500);
-                    }
-                }, {once: true});
-            }
-        }, 500);
-    }
-};
-
-function highlightElement(element) {
-    document.querySelectorAll('.tutorial-highlight').forEach(el => {
-        el.classList.remove('tutorial-highlight');
-    });
-    
-    element.classList.add('tutorial-highlight');
-    
-    const overlay = document.getElementById('tutorialOverlay');
-    overlay.style.background = 'rgba(0, 0, 0, 0.8)';
-    overlay.style.display = 'block';
+function updateImageLabel() {
+    if (!currentImageSrc) return;
+    const scale = currentZoom / 100;
+    document.getElementById('buttonLabel').value = `<img src="${currentImageSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;transform:scale(${scale});transform-origin:center;">`;
 }
 
 if (!localStorage.getItem('tutorialSeen')) {

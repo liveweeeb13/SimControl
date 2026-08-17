@@ -2,25 +2,60 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SimControl</title>
     <link rel="icon" type="image/x-icon" href="/static/favico.ico">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" id="themeStylesheet" href="{{ url_for('static', filename='style1.css') }}">
 </head>
 <body>
-    <div class="container">
+    <button id="fsBtn" ondblclick="toggleFullscreen()" style="position:fixed;top:8px;right:8px;z-index:999;width:18px;height:18px;background:rgba(120,120,120,0.4);border:none;border-radius:3px;cursor:pointer;"></button>
         <div class="streamdeck" id="streamdeck"></div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script src="/config.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
+        function toggleFullscreen() {
+            const el = document.documentElement;
+            const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+            const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+            const full = document.fullscreenElement || document.webkitFullscreenElement;
+            if (!full) {
+                if (req) req.call(el);
+            } else {
+                if (exit) exit.call(document);
+            }
+        }
+
+        const fsBtn = document.getElementById('fsBtn');
+        let fsTap = 0;
+        fsBtn.addEventListener('touchend', e => {
+            e.preventDefault();
+            const now = Date.now();
+            if (now - fsTap < 400) toggleFullscreen();
+            fsTap = now;
+        }, { passive: false });
+        fsBtn.addEventListener('dblclick', toggleFullscreen);
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('landscape').catch(() => {});
         }
+
+        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+        document.addEventListener('touchend', (() => {
+            let last = 0;
+            return e => {
+                const now = Date.now();
+                if (now - last < 300) e.preventDefault();
+                last = now;
+            };
+        })(), { passive: false });
     </script>
 </body>
 </html>

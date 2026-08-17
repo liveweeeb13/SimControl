@@ -20,9 +20,8 @@
             <div class="digital-clock" id="clock"></div>
         </div>
     </header>
-    
+
     <div class="container">
-        
         <div class="menu-section">
             <h2>Configuration</h2>
             <div class="menu-buttons">
@@ -30,6 +29,7 @@
                 <button onclick="document.getElementById('importFile').click()" class="menu-btn">📥 Import Config</button>
                 <button onclick="clearConfig()" class="menu-btn">🗑️ Clear Config</button>
                 <button onclick="showTutorial()" class="menu-btn">📖 Tutorial</button>
+                <button onclick="toggleTheme()" class="menu-btn" id="themeBtn">🎨 Controller Theme</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importConfig(event)">
             </div>
         </div>
@@ -40,7 +40,7 @@
                 <button onclick="editButtons()" class="menu-btn">🎛️ Edit Buttons</button>
                 <button onclick="editRules()" class="menu-btn">⚙️ Edit Rules</button>
                 <button onclick="showCredits()" class="menu-btn">ℹ️ Credits</button>
-                <button onclick="window.open('/keytest', '_blank')" class="menu-btn">🔍 Key Tester</button>
+                <button onclick="window.open('/keytest', '_blank')" class="menu-btn">Key Inspector</button>
             </div>
         </div>
 
@@ -48,23 +48,6 @@
             <button onclick="startSimControl()" class="start-btn">Start SimControl</button>
         </div>
     </div>
-
-    {% if needs_update %}
-    <div id="updateModal" class="modal" style="display: block;">
-        <div class="modal-content update-modal">
-            <h3>⚠️ Update Available</h3>
-            <div class="update-info">
-                <p><strong>Installed Version:</strong> <code>{{ current_version }}</code></p>
-                <p><strong>Latest Version:</strong> <code>{{ latest_version }}</code></p>
-                <p>A new version of SimControl is available!</p>
-            </div>
-            <div class="update-buttons">
-                <button onclick="closeModal('updateModal')" class="update-btn-later">Later</button>
-                <button onclick="window.open('https://github.com/liveweeeb13/SimControl/releases', '_blank')" class="update-btn-now">Update</button>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
     <footer class="footer">
         <p>Created with <span class="heart">❤️</span> by <strong>liveweeeb</strong> | SimControl 2026</p>
@@ -84,149 +67,60 @@
                 <label>Title: <input type="text" id="buttonTitle"></label>
                 <label>Label: <input type="text" id="buttonLabel"></label>
                 <p style="font-size: 11px; color: #888; margin: 5px 0;">Emoji and SVG in "&lt;svg&gt;&lt;/svg&gt;" are supported</p>
-                <label>Key: 
+                <label>Key:
                     <select id="buttonKey">
                         <option value="">-- Select Key --</option>
                         <optgroup label="Letters">
-                            <option value="a">A</option>
-                            <option value="b">B</option>
-                            <option value="c">C</option>
-                            <option value="d">D</option>
-                            <option value="e">E</option>
-                            <option value="f">F</option>
-                            <option value="g">G</option>
-                            <option value="h">H</option>
-                            <option value="i">I</option>
-                            <option value="j">J</option>
-                            <option value="k">K</option>
-                            <option value="l">L</option>
-                            <option value="m">M</option>
-                            <option value="n">N</option>
-                            <option value="o">O</option>
-                            <option value="p">P</option>
-                            <option value="q">Q</option>
-                            <option value="r">R</option>
-                            <option value="s">S</option>
-                            <option value="t">T</option>
-                            <option value="u">U</option>
-                            <option value="v">V</option>
-                            <option value="w">W</option>
-                            <option value="x">X</option>
-                            <option value="y">Y</option>
-                            <option value="z">Z</option>
+                            <option value="a">A</option><option value="b">B</option><option value="c">C</option>
+                            <option value="d">D</option><option value="e">E</option><option value="f">F</option>
+                            <option value="g">G</option><option value="h">H</option><option value="i">I</option>
+                            <option value="j">J</option><option value="k">K</option><option value="l">L</option>
+                            <option value="m">M</option><option value="n">N</option><option value="o">O</option>
+                            <option value="p">P</option><option value="q">Q</option><option value="r">R</option>
+                            <option value="s">S</option><option value="t">T</option><option value="u">U</option>
+                            <option value="v">V</option><option value="w">W</option><option value="x">X</option>
+                            <option value="y">Y</option><option value="z">Z</option>
                         </optgroup>
                         <optgroup label="Numbers">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
+                            <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+                            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                            <option value="6">6</option><option value="7">7</option><option value="8">8</option>
                             <option value="9">9</option>
                         </optgroup>
                         <optgroup label="Function Keys">
-                            <option value="F1">F1</option>
-                            <option value="F2">F2</option>
-                            <option value="F3">F3</option>
-                            <option value="F4">F4</option>
-                            <option value="F5">F5</option>
-                            <option value="F6">F6</option>
-                            <option value="F7">F7</option>
-                            <option value="F8">F8</option>
-                            <option value="F9">F9</option>
-                            <option value="F10">F10</option>
-                            <option value="F11">F11</option>
-                            <option value="F12">F12</option>
+                            <option value="F1">F1</option><option value="F2">F2</option><option value="F3">F3</option>
+                            <option value="F4">F4</option><option value="F5">F5</option><option value="F6">F6</option>
+                            <option value="F7">F7</option><option value="F8">F8</option><option value="F9">F9</option>
+                            <option value="F10">F10</option><option value="F11">F11</option><option value="F12">F12</option>
                         </optgroup>
                         <optgroup label="Special Keys">
-                            <option value=" ">Space</option>
-                            <option value="Enter">Enter</option>
-                            <option value="Tab">Tab</option>
-                            <option value="Escape">Escape</option>
-                            <option value="Backspace">Backspace</option>
-                            <option value="Delete">Delete</option>
-                            <option value="Insert">Insert</option>
-                            <option value="Home">Home</option>
-                            <option value="End">End</option>
-                            <option value="PageUp">Page Up</option>
-                            <option value="PageDown">Page Down</option>
-                            <option value="CapsLock">Caps Lock</option>
-                            <option value="NumLock">Num Lock</option>
-                            <option value="ScrollLock">Scroll Lock</option>
-                            <option value="Pause">Pause</option>
-                            <option value="PrintScreen">Print Screen</option>
-                        </optgroup>
-                        <optgroup label="Symbols & Punctuation">
-                            <option value="!">! (Exclamation)</option>
-                            <option value="@">@ (At)</option>
-                            <option value="#"># (Hash)</option>
-                            <option value="$">$ (Dollar)</option>
-                            <option value="%">% (Percent)</option>
-                            <option value="^">^ (Caret)</option>
-                            <option value="&">&amp; (Ampersand)</option>
-                            <option value="*">* (Asterisk)</option>
-                            <option value="(">( (Left Paren)</option>
-                            <option value=")"> ) (Right Paren)</option>
-                            <option value="-">- (Minus)</option>
-                            <option value="_">_ (Underscore)</option>
-                            <option value="=">= (Equal)</option>
-                            <option value="+">+ (Plus)</option>
-                            <option value="[">[ (Left Bracket)</option>
-                            <option value="]">] (Right Bracket)</option>
-                            <option value="{">{ (Left Brace)</option>
-                            <option value="}">} (Right Brace)</option>
-                            <option value="\\">\\ (Backslash)</option>
-                            <option value="|">| (Pipe)</option>
-                            <option value=";">; (Semicolon)</option>
-                            <option value=":">: (Colon)</option>
-                            <option value="'">' (Quote)</option>
-                            <option value='"'>" (Double Quote)</option>
-                            <option value=",">, (Comma)</option>
-                            <option value=".">. (Period)</option>
-                            <option value="/">/ (Slash)</option>
-                            <option value="?">? (Question)</option>
-                            <option value="<">&lt; (Less Than)</option>
-                            <option value=">">&gt; (Greater Than)</option>
-                            <option value="`">` (Backtick)</option>
-                            <option value="~">~ (Tilde)</option>
-                        </optgroup>
-                        <optgroup label="French Keys">
-                            <option value="é">é (e acute)</option>
-                            <option value="è">è (e grave)</option>
-                            <option value="à">à (a grave)</option>
-                            <option value="ù">ù (u grave)</option>
-                            <option value="ç">ç (c cedilla)</option>
-                            <option value="²">² (superscript 2)</option>
-                            <option value="§">§ (section)</option>
-                            <option value="°">° (degree)</option>
-                            <option value="µ">µ (micro)</option>
+                            <option value=" ">Space</option><option value="Enter">Enter</option>
+                            <option value="Tab">Tab</option><option value="Escape">Escape</option>
+                            <option value="Backspace">Backspace</option><option value="Delete">Delete</option>
+                            <option value="Insert">Insert</option><option value="Home">Home</option>
+                            <option value="End">End</option><option value="PageUp">Page Up</option>
+                            <option value="PageDown">Page Down</option><option value="CapsLock">Caps Lock</option>
+                            <option value="NumLock">Num Lock</option><option value="ScrollLock">Scroll Lock</option>
+                            <option value="Pause">Pause</option><option value="PrintScreen">Print Screen</option>
                         </optgroup>
                         <optgroup label="Arrow Keys">
-                            <option value="ArrowUp">Arrow Up</option>
-                            <option value="ArrowDown">Arrow Down</option>
-                            <option value="ArrowLeft">Arrow Left</option>
-                            <option value="ArrowRight">Arrow Right</option>
+                            <option value="ArrowUp">Arrow Up</option><option value="ArrowDown">Arrow Down</option>
+                            <option value="ArrowLeft">Arrow Left</option><option value="ArrowRight">Arrow Right</option>
                         </optgroup>
                         <optgroup label="Numpad">
-                            <option value="Numpad0">Numpad 0</option>
-                            <option value="Numpad1">Numpad 1</option>
-                            <option value="Numpad2">Numpad 2</option>
-                            <option value="Numpad3">Numpad 3</option>
-                            <option value="Numpad4">Numpad 4</option>
-                            <option value="Numpad5">Numpad 5</option>
-                            <option value="Numpad6">Numpad 6</option>
-                            <option value="Numpad7">Numpad 7</option>
-                            <option value="Numpad8">Numpad 8</option>
-                            <option value="Numpad9">Numpad 9</option>
-                            <option value="NumpadEnter">Numpad Enter</option>
-                            <option value="NumpadAdd">Numpad +</option>
-                            <option value="NumpadSubtract">Numpad -</option>
-                            <option value="NumpadMultiply">Numpad *</option>
-                            <option value="NumpadDivide">Numpad /</option>
-                            <option value="NumpadDecimal">Numpad .</option>
+                            <option value="Numpad0">Numpad 0</option><option value="Numpad1">Numpad 1</option>
+                            <option value="Numpad2">Numpad 2</option><option value="Numpad3">Numpad 3</option>
+                            <option value="Numpad4">Numpad 4</option><option value="Numpad5">Numpad 5</option>
+                            <option value="Numpad6">Numpad 6</option><option value="Numpad7">Numpad 7</option>
+                            <option value="Numpad8">Numpad 8</option><option value="Numpad9">Numpad 9</option>
+                            <option value="NumpadEnter">Numpad Enter</option><option value="NumpadAdd">Numpad +</option>
+                            <option value="NumpadSubtract">Numpad -</option><option value="NumpadMultiply">Numpad *</option>
+                            <option value="NumpadDivide">Numpad /</option><option value="NumpadDecimal">Numpad .</option>
+                        </optgroup>
+                        <optgroup label="French Keys">
+                            <option value="é">é</option><option value="è">è</option><option value="à">à</option>
+                            <option value="ù">ù</option><option value="ç">ç</option><option value="²">²</option>
+                            <option value="§">§</option><option value="°">°</option><option value="µ">µ</option>
                         </optgroup>
                     </select>
                 </label>
@@ -249,17 +143,25 @@
             <div id="rulesContent"></div>
             <div class="modal-buttons">
                 <button onclick="addRule('autodisable')" class="menu-btn">+ Add Autodisable</button>
-                <button onclick="addRule('stopmac')" class="menu-btn">+ Add Stopmac</button>
+                <button onclick="addRule('stopmac')" class="menu-btn">+ Add Lock</button>
             </div>
         </div>
     </div>
 
     <div id="tutorialOverlay" class="tutorial-overlay">
-        <div class="tutorial-tooltip" id="tutorialTooltip">
-            <div class="tutorial-step-content">
-                <h4>Create your first button!</h4>
-                <p>Click on "🎛️ Edit Buttons" to start configuring your controller</p>
-                <div class="tutorial-arrow"></div>
+        <div class="tutorial-modal">
+            <div class="tutorial-header">
+                <span class="tutorial-step-label" id="tutorialStepLabel">Step 1 / 4</span>
+            </div>
+            <div class="tutorial-progress" id="tutorialProgress"></div>
+            <h4 id="tutorialTitle"></h4>
+            <p id="tutorialDesc"></p>
+            <div class="tutorial-actions">
+                <button class="tutorial-skip" onclick="skipTutorial()">Skip</button>
+                <div style="display:flex;gap:10px;">
+                    <button class="tutorial-prev" id="tutorialPrevBtn" onclick="prevTutorialStep()">Previous</button>
+                    <button class="tutorial-next" id="tutorialNextBtn" onclick="nextTutorialStep()">Next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -267,56 +169,56 @@
     <div id="helpModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('helpModal')">&times;</span>
-            <h3>Besoin d'aide ?</h3>
+            <h3>Need help?</h3>
             <div class="help-content">
-                <h4>Démarrage rapide</h4>
-                <p>SimControl transforme votre appareil en contrôleur de boutons pour simulateurs.</p>
-                
-                <h4>Création de boutons</h4>
+                <h4>Quick Start</h4>
+                <p>SimControl turns your device into a button controller for simulators.</p>
+
+                <h4>Creating Buttons</h4>
                 <ol>
-                    <li>Cliquez sur "🎛️ Modifier Boutons" pour configurer votre contrôleur</li>
-                    <li>Sélectionnez une position (1-35) sur la grille</li>
-                    <li>Remplissez le Titre, Label et sélectionnez une Touche</li>
-                    <li>Cliquez sur "Sauvegarder" pour créer le bouton</li>
-                    <li>Cliquez sur "Démarrer SimControl" pour lancer votre contrôleur</li>
+                    <li>Click "🎛️ Edit Buttons" to configure your controller</li>
+                    <li>Select a position (1-35) on the grid</li>
+                    <li>Fill in the Title, Label and select a Key</li>
+                    <li>Click "Save" to create the button</li>
+                    <li>Click "Start SimControl" to launch your controller</li>
                 </ol>
-                
-                <h4>Paramètres des boutons</h4>
+
+                <h4>Button Settings</h4>
                 <ul>
-                    <li><strong>Titre :</strong> Nom interne pour l'organisation</li>
-                    <li><strong>Label :</strong> Texte/emoji affiché sur le bouton</li>
-                    <li><strong>Touche :</strong> Touche clavier envoyée lors de l'appui</li>
-                    <li><strong>Basculable :</strong> Le bouton reste enfoncé (OUI) ou momentané (NON)</li>
-                    <li><strong>Couleurs :</strong> Couleurs des états OFF et ON</li>
-                    <li><strong>Temps de maintien (pour toggleable: true):</strong> Durée de maintien de la touche (millisecondes)</li>
+                    <li><strong>Title:</strong> Internal name for organization</li>
+                    <li><strong>Label:</strong> Text/emoji displayed on the button</li>
+                    <li><strong>Key:</strong> Keyboard key sent on press</li>
+                    <li><strong>Toggleable:</strong> Button stays pressed (ON) or momentary (OFF)</li>
+                    <li><strong>Colors:</strong> Colors for OFF and ON states</li>
+                    <li><strong>Hold Time (toggleable: true):</strong> How long the key is held (milliseconds)</li>
                 </ul>
-                
-                <h4>Règles automatiques</h4>
-                <p>Les règles permettent d'automatiser le comportement des boutons :</p>
+
+                <h4>Automatic Rules</h4>
+                <p>Rules let you automate button behavior:</p>
                 <ul>
-                    <li><strong>Autodisable :</strong> Désactive automatiquement des boutons cibles quand un bouton déclencheur change d'état</li>
-                    <li><strong>Stopmac :</strong> Bloque l'interaction avec des boutons cibles selon l'état d'un bouton déclencheur (FREEZE)</li>
+                    <li><strong>Autodisable:</strong> Automatically disables target buttons when a trigger button changes state</li>
+                    <li><strong>Lock:</strong> Blocks interaction with target buttons based on a trigger button's state (FREEZE)</li>
                 </ul>
-                
-                <h4>Création de règles</h4>
+
+                <h4>Creating Rules</h4>
                 <ol>
-                    <li>Cliquez sur "⚙️ Modifier Règles"</li>
-                    <li>Choisissez "+ Ajouter Autodisable" ou "+ Ajouter Stopmac"</li>
-                    <li>Entrez l'ID du bouton déclencheur (1-35)</li>
-                    <li>Entrez les IDs des boutons cibles séparés par des virgules</li>
-                    <li>Choisissez la condition : "on" (activé) ou "off" (désactivé)</li>
+                    <li>Click "⚙️ Edit Rules"</li>
+                    <li>Choose "+ Add Autodisable" or "+ Add Lock"</li>
+                    <li>Select the trigger button (1-35)</li>
+                    <li>Select the target buttons</li>
+                    <li>Choose the condition: "on" or "off"</li>
                 </ol>
-                
-                <h4>Besoin de plus d'aide ?</h4>
+
+                <h4>Examples</h4>
                 <ul>
-                    <li><strong>Autodisable :</strong> Bouton 1 (Batterie) désactive boutons 2,3 quand il est "off"</li>
-                    <li><strong>Stopmac :</strong> Bouton 1 (Maître) bloque boutons 4,5,6 quand il est "off"</li>
+                    <li><strong>Autodisable:</strong> Button 1 (Battery) disables buttons 2,3 when "off"</li>
+                    <li><strong>Lock:</strong> Button 1 (Master) blocks buttons 4,5,6 when "off"</li>
                 </ul>
-                
-                <h4>Besoin d'aide supplémentaire ?</h4>
+
+                <h4>Need more help?</h4>
                 <div class="help-buttons">
-                    <button onclick="showTutorial(); closeModal('helpModal');" class="menu-btn">📖 Tutoriel interactif</button>
-                    <button onclick="window.open('https://discord.gg/ukJegYrXWR', '_blank')" class="menu-btn">💬 Support Discord</button>
+                    <button onclick="showTutorial(); closeModal('helpModal');" class="menu-btn">📖 Interactive Tutorial</button>
+                    <button onclick="window.open('https://discord.gg/ukJegYrXWR', '_blank')" class="menu-btn">💬 Discord Support</button>
                 </div>
             </div>
         </div>
@@ -329,27 +231,26 @@
             <div class="credits-content">
                 <h4>SimControl 2026</h4>
                 <p>Created with ❤️ by <strong>liveweeeb</strong></p>
-                
-                <h4>Help</h4>
-                <ul>
-                    <li>Mr_Ewann 🚂🚃</li>
-                </ul>
 
                 <h4>Current Version</h4>
                 <ul>
                     <li>SimControl: <code>{{ current_version }}</code></li>
                 </ul>
-                
+
                 <div class="credits-links">
-                    <a href="https://github.com/liveweeeb" target="_blank">🐈 GitHub</a>
-                    <a href="https://discord.gg/yourserver" target="_blank">💬 Discord</a>
-                    <a href="mailto:contact@liveweeeb.com">📧 Contact</a>
+                    <a href="https://github.com/liveweeeb13" target="_blank">🐈 GitHub</a>
+                    <a href="https://discord.gg/ukJegYrXWR" target="_blank">💬 Discord</a>
+                    <a href="https://id.rappytv.com/790240841598763018">📧 Contact</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/config.js"></script>
+    <script>
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+    </script>
     <script src="/static/menu.js"></script>
     <script>
         function updateClock() {
@@ -360,5 +261,23 @@
         setInterval(updateClock, 60);
         updateClock();
     </script>
+
+    {% if needs_update %}
+    <div id="updateModal" class="modal" style="display: block;">
+        <div class="modal-content update-modal">
+            <h3>⚠️ Update Available</h3>
+            <div class="update-info">
+                <p><strong>Installed Version:</strong> <code>{{ current_version }}</code></p>
+                <p><strong>Latest Version:</strong> <code>{{ latest_version }}</code></p>
+                <p>A new version of SimControl is available!</p>
+            </div>
+            <div class="update-buttons">
+                <button onclick="closeModal('updateModal')" class="update-btn-later">Later</button>
+                <button onclick="window.open('https://github.com/liveweeeb13/SimControl/releases', '_blank')" class="update-btn-now">Update</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
 </body>
 </html>

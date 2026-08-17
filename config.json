@@ -1,0 +1,158 @@
+{
+    "buttons": [
+        {
+            "color1": "#ff0000",
+            "color2": "#01da00",
+            "id": 2,
+            "key": "j",
+            "label": "\ud83d\udd0b",
+            "title": "batterie",
+            "toggleable": true
+        },
+        {
+            "color1": "#ff0000",
+            "color2": "#01da00",
+            "id": 1,
+            "key": "u",
+            "label": "\ud83d\udd0c",
+            "title": "panto",
+            "toggleable": true
+        },
+        {
+            "color1": "#0099ff",
+            "color2": "#25edf7",
+            "id": 30,
+            "key": "b",
+            "label": "\ud83d\udd14",
+            "title": "dong",
+            "toggleable": false
+        },
+        {
+            "color1": "#0099ff",
+            "color2": "#25edf7",
+            "id": 8,
+            "key": "h",
+            "label": "\ud83d\udce2",
+            "title": "klaxon",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 9,
+            "key": "k",
+            "label": "\ud83d\udca1",
+            "title": "lampe",
+            "toggleable": true
+        },
+        {
+            "color1": "#6905ff",
+            "color2": "#ee00ff",
+            "id": 29,
+            "key": "s",
+            "label": "\u2b07\ufe0f",
+            "title": "ralentir",
+            "toggleable": false
+        },
+        {
+            "color1": "#cba210",
+            "color2": "#c4761c",
+            "id": 22,
+            "key": "z",
+            "label": "\u2b06\ufe0f",
+            "title": "accel",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 34,
+            "key": "v",
+            "label": "\u26d4",
+            "title": "fermer",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 28,
+            "key": "c",
+            "label": "\ud83d\udeaa",
+            "title": "porte-droite",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 27,
+            "key": "x",
+            "label": "\u2705",
+            "title": "ouvrir",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 26,
+            "key": "w",
+            "label": "\ud83d\udeaa",
+            "title": "porte-gauche",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#ff3838",
+            "id": 23,
+            "key": "y",
+            "label": "\u26a0\ufe0f",
+            "title": "warning",
+            "toggleable": true
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 4,
+            "key": "f",
+            "label": "\ud83e\ude9f",
+            "title": "essuieglace",
+            "toggleable": false
+        },
+        {
+            "color1": "#808080",
+            "color2": "#fff000",
+            "id": 31,
+            "key": "r",
+            "label": "\u27a1\ufe0f",
+            "title": "feu",
+            "toggleable": false
+        }
+    ],
+    "rules": {
+        "autodisable": [
+            {
+                "condition": "off",
+                "targets": [
+                    2
+                ],
+                "trigger": 1
+            },
+            {
+                "condition": "on",
+                "targets": [
+                    27
+                ],
+                "trigger": 34
+            }
+        ],
+        "lock": [
+            {
+                "condition": "off",
+                "targets": [
+                    2
+                ],
+                "trigger": 1
+            }
+        ]
+    },
+    "theme": "1"
+}
