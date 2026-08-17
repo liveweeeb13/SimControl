@@ -10,28 +10,43 @@ import tkinter as tk
 from tkinter import scrolledtext
 import socket
 
+from pynput.keyboard import Key, Controller as KeyboardController
+
+KEY_MAP = {
+    'space': Key.space, 'Enter': Key.enter, 'NumpadEnter': Key.enter,
+    'Numpad0': Key.num_lock, 'Numpad1': Key.end, 'Numpad2': Key.down,
+    'Numpad3': Key.page_down, 'Numpad4': Key.left, 'Numpad5': Key.num_lock,
+    'Numpad6': Key.right, 'Numpad7': Key.home, 'Numpad8': Key.up,
+    'Numpad9': Key.page_up, 'NumpadAdd': Key.media_volume_up,
+    'NumpadSubtract': Key.media_volume_down, 'NumpadDecimal': Key.delete,
+    'Tab': Key.tab, 'Escape': Key.esc, 'Backspace': Key.backspace,
+    'Delete': Key.delete, 'Insert': Key.insert,
+    'ArrowUp': Key.up, 'ArrowDown': Key.down, 'ArrowLeft': Key.left, 'ArrowRight': Key.right,
+    'Home': Key.home, 'End': Key.end, 'PageUp': Key.page_up, 'PageDown': Key.page_down,
+    'F1': Key.f1, 'F2': Key.f2, 'F3': Key.f3, 'F4': Key.f4, 'F5': Key.f5,
+    'F6': Key.f6, 'F7': Key.f7, 'F8': Key.f8, 'F9': Key.f9, 'F10': Key.f10,
+    'F11': Key.f11, 'F12': Key.f12,
+    'Shift': Key.shift, 'Control': Key.ctrl, 'Alt': Key.alt, 'Meta': Key.cmd,
+    'CapsLock': Key.caps_lock, 'NumLock': Key.num_lock, 'ScrollLock': Key.scroll_lock,
+}
+
+keyboard = KeyboardController()
+
+def resolve_key(key):
+    if key in KEY_MAP:
+        return KEY_MAP[key]
+    if len(key) == 1:
+        return key
+    return None
+
 if platform.system() == "Windows":
-    from pynput.keyboard import Key, Controller
     import ctypes
-    from ctypes import wintypes
-else:
-    try:
-        from pynput.keyboard import Key, Controller
-    except ImportError:
-        import keyboard as kb_lib
-        Controller = None
-        Key = None
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex() 
 
-socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
+socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False, async_mode='threading')
 
-if Controller:
-    keyboard = Controller()
-else:
-    keyboard = None
-pressed_keys = set()
 
 def check_version():
     try:
@@ -112,6 +127,7 @@ def save_config():
     return jsonify({'success': True})
 
 button_press_count = {}
+pressed_keys = set()  # touches actuellement pressées
 
 @socketio.on('connect')
 def handle_connect():
@@ -122,69 +138,41 @@ def handle_connect():
 def handle_disconnect():
     client_ip = request.remote_addr
     gui_log(f"Disconnected : {client_ip}", "warn")
+    for key in list(pressed_keys):
+        try:
+            k = resolve_key(key)
+            if k: keyboard.release(k)
+        except:
+            pass
+    pressed_keys.clear()
 
 @socketio.on('keydown')
 def handle_keydown(data):
     key = data['key']
     btn_id = data.get('id', '?')
-    if key not in pressed_keys:
+    button_press_count[btn_id] = button_press_count.get(btn_id, 0) + 1
+    gui_log(f"Button #{btn_id} pressed : key: {key}", "key")
+    try:
+        if key in pressed_keys:
+            return
         pressed_keys.add(key)
-        button_press_count[btn_id] = button_press_count.get(btn_id, 0) + 1
-        gui_log(f"Button #{btn_id} pressed : key: {key}", "key")
-        try:
-            if not keyboard:
-                gui_log("No keyboard controller available", "warn")
-                return
-            if key == 'space':
-                keyboard.press(Key.space)
-            elif key == 'NumpadEnter':
-                if platform.system() == "Windows":
-                    ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001, 0)
-                    ctypes.windll.user32.keybd_event(0x0D, 0x1C, 0x0001 | 0x0002, 0)
-                else:
-                    keyboard.press(Key.enter)
-                    keyboard.release(Key.enter)
-            elif key == 'Enter':
-                keyboard.press(Key.enter)
-            elif key.startswith('Numpad'):
-                numpad_map = {
-                    'Numpad0': Key.insert, 'Numpad1': Key.end, 'Numpad2': Key.down,
-                    'Numpad3': Key.page_down, 'Numpad4': Key.left, 'Numpad5': '5',
-                    'Numpad6': Key.right, 'Numpad7': Key.home, 'Numpad8': Key.up,
-                    'Numpad9': Key.page_up, 'NumpadAdd': '+', 'NumpadSubtract': '-',
-                    'NumpadMultiply': '*', 'NumpadDivide': '/', 'NumpadDecimal': Key.delete
-                }
-                keyboard.press(numpad_map.get(key, key))
-            else:
-                keyboard.press(key)
-        except Exception as e:
-            gui_log(f"Key error {key}: {e}", "error")
+        k = resolve_key(key)
+        if k:
+            keyboard.press(k)
+        else:
+            gui_log(f"Unknown key: {key}", "warn")
+    except Exception as e:
+        gui_log(f"Key error {key}: {e}", "error")
 
 @socketio.on('keyup')
 def handle_keyup(data):
     key = data['key']
-    if key in pressed_keys:
-        pressed_keys.remove(key)
-        try:
-            if key == 'space':
-                keyboard.release(Key.space)
-            elif key == 'NumpadEnter':
-                pass
-            elif key == 'Enter':
-                keyboard.release(Key.enter)
-            elif key.startswith('Numpad'):
-                numpad_map = {
-                    'Numpad0': Key.insert, 'Numpad1': Key.end, 'Numpad2': Key.down,
-                    'Numpad3': Key.page_down, 'Numpad4': Key.left, 'Numpad5': '5',
-                    'Numpad6': Key.right, 'Numpad7': Key.home, 'Numpad8': Key.up,
-                    'Numpad9': Key.page_up, 'NumpadAdd': '+', 'NumpadSubtract': '-',
-                    'NumpadMultiply': '*', 'NumpadDivide': '/', 'NumpadDecimal': Key.delete
-                }
-                keyboard.release(numpad_map.get(key, key))
-            else:
-                keyboard.release(key)
-        except Exception as e:
-            gui_log(f"Key release error {key}: {e}", "error")
+    try:
+        pressed_keys.discard(key)
+        k = resolve_key(key)
+        if k: keyboard.release(k)
+    except Exception as e:
+        gui_log(f"Key release error {key}: {e}", "error")
 
 def get_local_ip():
     try:
