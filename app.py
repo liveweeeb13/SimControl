@@ -45,7 +45,7 @@ if platform.system() == "Windows":
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24).hex() 
 
-socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False, async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
 
 
 def check_version():
